@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="FensImport:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/FensImport_jar</output-path>
+    <root id="archive" name="FensImport.jar">
+      <element id="module-output" name="FensImport" />
+    </root>
+  </artifact>
+</component>
