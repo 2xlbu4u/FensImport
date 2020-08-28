@@ -6,11 +6,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
-public class ImportCSV
+public class FensImporter
 {
+    /*
     private static String xenaHeaderCsv = "timestamp," +
             "srcport,srcname,sid,destport,destname,tid,srctodest," +
             "txl1bps,txbps,txfps,txbytes,txframes,"  +
@@ -19,10 +19,13 @@ public class ImportCSV
             "rxfcserrors,rxseqerr,packetlossps,prtt,rxmiserr,rxp1derr,"  +
             "rxber,rxbercurr,"+
             "latencycurr,latencycurrmin,latencycurrmax,latencyavg,latencymin,latencymax," +
-            "jittercurr,jittercurrmin,jittercurrmax,jitteravg,jittermin,jittermax" +
+            "jittercurr,jittercurrmin,jittercurrmax,jitteravg,jittermin,jittermax," +
             "rxpauseframes,rxpfcframes";
-    
-    private static String pingHeaderCsv = "timestamp,srctodest,bytes,rtt,ttl";
+
+
+    private static String pingHeaderCsv = "timestamp,dayofweek,ip,srctodest,bytes,rtt,ttl";
+
+    private static String pingPatternCsv = "\"%s\",%d,\"%s\",\"%s\",%d,%d,%d";
 
     private static String xenaPatternCsv = "\"%s\"," +
             "\"%s\",\"%s\",%d,\"%s\",\"%s\",%d,\"%s\"," +
@@ -30,10 +33,10 @@ public class ImportCSV
             "%d,%d,%d,%d,%d," +
             "%d,%d,%d,%d," +
             "%d,%d,%d,%d,%d,%d," +
-            "%f,,%d" +
+            "%f,%d," +
             "%f,%f,%f,%f,%f,%f," +
             "%f,%f,%f,%f,%f,%f," +
-            "%d,%d\n";
+            "%d,%d";
 
     private static String pingPatternJson = "{\"index\":{\"_id\":\"%s\"}}\n{\"timestamp\":\"%s\",\"time\":\"%s\",\"dayofweek\":\"%d\",\"year\":\"%d\",\"month\":\"%d\",\"day\":\"%d\",\"hour\":\"%d\",\"minute\":\"%d\",\"second\":\"%d\"," +
             "\"ip\":\"%s\",\"srctodest\":\"%s\",\"bytes\":\"%d\",\"rtt\":\"%d\",\"ttl\":\"%d\"}\n";
@@ -61,7 +64,7 @@ public class ImportCSV
     private static final Map<String, String> portReMapC = new HashMap<>();
 
     private static final String urlPatternXena = "/xenapr/_bulk?pretty";
-    private static final String urlPatternPing = "/pingtime/_bulk?pretty";
+    private static final String urlPatternPing = "/pingpr/_bulk?pretty";
     private static final String urlPatternException = "/xenapexp/_bulk?pretty";
     private static String urlStringPing;
     private static String urlStringXena;
@@ -76,7 +79,8 @@ public class ImportCSV
     private static int blockCounterCsvPing = BLOCK_SIZE;
 
     private static Boolean isCsvOutOnly;
-
+    private static String csvFileType; */
+/*
     static
     {
         // Maps
@@ -161,7 +165,7 @@ public class ImportCSV
         portReMapB.put("Pepwave P5 to Pepwave B305","BL2b-10 ACY2I T-Mobile unencrypted");
 
         // BL2c
-/*      portReMapC.put("Pepwave B305 to Pepwave P4","BL2c-1a I2ACY T-Mobile");
+        portReMapC.put("Pepwave B305 to Pepwave P4","BL2c-1a I2ACY T-Mobile");
         portReMapC.put("Pepwave P4 to Pepwave B305","BL2c-1a ACY2I T-Mobile");
         portReMapC.put("Pepwave B305 to Pepwave P5","BL2c-1b I2ACY T-Mobile unencrypted");
         portReMapC.put("Pepwave P5 to Pepwave B305","BL2c-1b ACY2I T-Mobile unencrypted");
@@ -174,7 +178,7 @@ public class ImportCSV
         portReMapC.put("Pepwave B305 to Pepwave P4","BL2c-3a I2ACY T-Mobile");
         portReMapC.put("Pepwave P4 to Pepwave B305","BL2c-3a ACY2I T-Mobile");
         portReMapC.put("Pepwave B305 to Pepwave P5","BL2c-3b I2ACY T-Mobile");
-        portReMapC.put("Pepwave P5 to Pepwave B305","BL2c-3b ACY2I T-Mobile");*/
+        portReMapC.put("Pepwave P5 to Pepwave B305","BL2c-3b ACY2I T-Mobile");*
 
         portReMapC.put("Pepwave P4 to Pepwave P5","BL2c-4 P42P5 ACY T-Mobile to T-Mobile");
         portReMapC.put("Pepwave P5 to Pepwave P4","BL2c-4 P52P4 ACY T-Mobile to T-Mobile");
@@ -184,7 +188,7 @@ public class ImportCSV
         portReMapC.put("Pepwave P2 to Pepwave P1","BL2c-6 P22P1 OKC AT&T to AT&T");
         portReMapC.put("ACY to OKC","BL2c-8 Internet");
 
- /*       portReMapC.put("Cisco 2800 to Digi D1","BL2b-2 I2OKC AT&T");
+       portReMapC.put("Cisco 2800 to Digi D1","BL2b-2 I2OKC AT&T");
         portReMapC.put("Digi D1 to Cisco 2800","BL2b-2 OKC2I AT&T");
         portReMapC.put("Cisco 2800 to Digi D3","BL2b-3 I2ACY Vz");
         portReMapC.put("Digi D3 to Cisco 2800","BL2b-3 ACY2I Vz");
@@ -195,25 +199,30 @@ public class ImportCSV
         portReMapC.put("Pepwave P1 to Pepwave P2","BL2b-7 OKC2OKC AT&T to T-Mobile");
         portReMapC.put("Pepwave P2 to Pepwave P1","BL2b-7 OKC2OKC T-Mobile to AT&T");
         portReMapC.put("ACY to OKC","BL2b-8 Internet");
-*/
-            monthMap.put("Jan", "01");
-            monthMap.put("Feb", "02");
-            monthMap.put("Mar", "03");
-            monthMap.put("Apr", "04");
-            monthMap.put("May", "05");
-            monthMap.put("Jun", "06");
-            monthMap.put("Jul", "07");
-            monthMap.put("Aug", "08");
-            monthMap.put("Sep", "09");
-            monthMap.put("Oct", "10");
-            monthMap.put("Nov", "11");
-            monthMap.put("Dec", "12");
+
+        monthMap.put("Jan", "01");
+        monthMap.put("Feb", "02");
+        monthMap.put("Mar", "03");
+        monthMap.put("Apr", "04");
+        monthMap.put("May", "05");
+        monthMap.put("Jun", "06");
+        monthMap.put("Jul", "07");
+        monthMap.put("Aug", "08");
+        monthMap.put("Sep", "09");
+        monthMap.put("Oct", "10");
+        monthMap.put("Nov", "11");
+        monthMap.put("Dec", "12");
 
     }
-    
+    */
+
+
     public static void main(String[] args) throws IOException
     {
-                  //  String zipFilePath = "C:\\Users\\Public\\FENSTest\\BL2 Results 0330 to 0401.zip";
+        Boolean doExport;
+        Boolean buildHistogram;
+
+        String exportType = null;
         try
         {
             if (args.length < 2)
@@ -223,29 +232,77 @@ public class ImportCSV
                 System.exit(1);
             }
 
-            String readFilePath = args[1];
+            String filePath = args[1];
 
-            isCsvOutOnly = args.length > 2 && args[2].toLowerCase().equals("-f");
+            doExport = args.length > 2 && args[2].toLowerCase().equals("-x");
 
-            File rootFolder = readFilePath.toLowerCase().endsWith(".zip") ?  UnzipFiles.UnzipAndCopyLocal(readFilePath) : new File(readFilePath);
-                    //new File("C:\\Users\\Public\\FENSTest\\BL2 Results 0423 to 0424\\xena"); //
+            if (doExport && args.length > 3)
+            {
+                exportType = args[3].toLowerCase();
+            }
+
+            String hostname = args[0];
+
+            if (exportType == null && ! DataManager.TestConnection(hostname))
+            {
+                System.exit(1);
+            }
+
+            File rootFolder = filePath.toLowerCase().endsWith(".zip") ? UnzipFiles.UnzipAndCopyLocal(filePath) : new File(filePath);
+
             if (rootFolder == null)
             {
-                System.out.println("Unable to establish root Folder from: " + readFilePath);
+                System.out.println("Unable to establish root Folder from: " + filePath);
+                return;
+            }
+
+            FileType xportFileType = null;
+
+            if (exportType != null && exportType.equals("xena"))
+            {
+                xportFileType = new XenaFileType();
+            }
+            else if (exportType != null && exportType.equals("ping"))
+            {
+                xportFileType = new PingFileType();
+            }
+            else if (exportType != null && exportType.startsWith("histo"))
+            {
+                xportFileType = new HistoFileType();
+            }
+
+            List<DataRecordSet> recordSetList = DataManager.ProcessInputFiles(rootFolder);
+
+            if (xportFileType != null)
+            {
+                DataManager.ExportHistogram(rootFolder, recordSetList);
             }
             else
             {
-                importCsvData(args[0], rootFolder);
+                for (DataRecordSet dataRecordSet : recordSetList)
+                {
+                    System.out.println("Loading " + dataRecordSet.Filename);
+
+                    DataManager.FormatData(dataRecordSet, xportFileType);
+
+                    DataManager.LoadKibanaData(dataRecordSet, xportFileType);
+
+                    String outFilename = rootFolder + "\\outData.export";
+                    Files.deleteIfExists(new File(outFilename).toPath());
+                    BufferedWriter outWriter = new BufferedWriter(new FileWriter(outFilename, true));
+                    DataManager.ExportData(dataRecordSet, outWriter);
+                }
             }
+            // importCsvData(args[0], rootFolder);
+
             System.out.println("\nCompleted");
 
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
-             ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
-
+/*
     private static void importCsvData(String hostname, File rootFolder ) throws Exception
     {
         BufferedReader csvReader= null;
@@ -296,7 +353,17 @@ public class ImportCSV
                 String outFilename = rootFolder + "\\outData.export";
                 Files.deleteIfExists(new File(outFilename).toPath());
                 outWriter = new BufferedWriter(new FileWriter(outFilename, true));
-                sbCsvXena.append(xenaHeaderCsv).append("\n");
+
+                if (csvFileType.equals("xena"))
+                    sbCsvXena.append(xenaHeaderCsv).append("\n");
+
+                else if (csvFileType.equals("ping"))
+                    sbCsvPing.append(pingHeaderCsv).append("\n");
+                else
+                {
+                    System.out.println("Unknown CSV File Type");
+                    System.exit(1);
+                }
             }
 
             int linecount = 0;
@@ -316,7 +383,9 @@ public class ImportCSV
                         {
                             header = row;
                             if (header.startsWith("Date"))
+                            {
                                 fileType = "ping";
+                            }
                             else if (filename.contains("VZW") || filename.contains("T-Mobile"))
                                 fileType = "exception";
                             else
@@ -337,12 +406,21 @@ public class ImportCSV
 
                         DataRecordSet dataRecordSet = formatData(filename, fileType, csvData, oldNewseqerr);
                         //System.out.print("Line: "+ ++linecount + "\r");
+                        if (dataRecordSet.csvRecordPing != null)
+                        {
+                            sbCsvPing.append(dataRecordSet.csvRecordPing).append("\n");
+                            if (--blockCounterCsvPing <= 0)
+                            {
+                                sbCsvPing = exportData("ping", sbCsvPing, outWriter);
+                            }
+                        }
+
                         if (dataRecordSet.csvRecordXena != null)
                         {
                             sbCsvXena.append(dataRecordSet.csvRecordXena).append("\n");
                             if (--blockCounterCsvXena <= 0)
                             {
-                                sbCsvXena = saveCsvData("xena", sbCsvXena, outWriter);
+                                sbCsvXena = exportData("xena", sbCsvXena, outWriter);
                             }
                         }
 
@@ -374,9 +452,13 @@ public class ImportCSV
 
                     }
 
+                    if (sbCsvPing.length() > 0)
+                    {
+                        sbCsvPing = exportData("ping", sbCsvPing, outWriter);
+                    }
                     if (sbCsvXena.length() > 0)
                     {
-                        sbCsvXena = saveCsvData("xena", sbCsvXena, outWriter);
+                        sbCsvXena = exportData("xena", sbCsvXena, outWriter);
                     }
 
                     if (sbXena.length() > 0)
@@ -411,13 +493,19 @@ public class ImportCSV
 
     }
 
-    private static StringBuffer saveCsvData(String fileType, StringBuffer sbDataBuffer, BufferedWriter outWriter) throws Exception
+    private static StringBuffer exportData(String fileType, StringBuffer sbDataBuffer, BufferedWriter outWriter) throws Exception
     {
         if (fileType.equals("xena"))
         {
             outWriter.append(sbDataBuffer.toString());
             System.out.print("Exported " + sbDataBuffer.length() + " xena Bytes\r");
             blockCounterCsvXena = BLOCK_SIZE;
+        }
+        else if (fileType.equals("ping"))
+        {
+            outWriter.append(sbDataBuffer.toString());
+            System.out.print("Exported " + sbDataBuffer.length() + " ping Bytes\r");
+            blockCounterCsvPing = BLOCK_SIZE;
         }
         return new StringBuffer();
     }
@@ -448,6 +536,12 @@ public class ImportCSV
     private static DataRecordSet formatData(String filename, String fileType, String[] csvData, int[] oldNewseqerr) throws Exception
     {
         DataRecordSet dataRecordSet =  new DataRecordSet();
+
+        if (csvData.length < 6 || (csvData.length > 6 && csvData.length < 9))
+        {
+            System.out.println("Not enough data for valid record");
+            return dataRecordSet;
+        }
 
         String jsonRecord;
 
@@ -529,6 +623,9 @@ public class ImportCSV
                 if (secondStr.length() == 1)
                     secondStr = "0" + secondStr;
 
+                if (hourStr.equals("24"))
+                    hourStr = "00";
+
                 String ip = csvData[2];
 
                 String srcToDest = null;
@@ -537,64 +634,20 @@ public class ImportCSV
                 String rttStr = csvData[4];
                 String ttlStr = csvData[5];
 
-                if (csvData.length == 6)
-                {
-                    if (filename.toLowerCase().contains("toddr"))
-                    {
-                        srcToDest = "Cable – FIOS VA to internet";
-                    }
-                    else if (filename.toLowerCase().contains("google"))
-                    {
-                        srcToDest = "Cable – Google fiber to Internet";
-                    }                // Mark cable  ->    Spectrum cable FL
-                    else if (filename.contains("Teresa"))
-                    {
-                        srcToDest = "cable - Comcast NJ to internet";
-                    }
-                    else if (filename.contains("FIOS"))
-                    {
-                        srcToDest = "cable - FIOS to internet";
-                    }
-                    else
-                    {
-                        srcToDest = "ACY to OKC";
-                    }
-                }
-                else
-                {
-                    if (csvData.length < 9)
-                    {
-                        System.out.println("Not enough data for valid record");
-                        return dataRecordSet;
-                    }
+                String[] splitName = filename.split("_");
+                String[] derivedNameParts = splitName[0].split("\\\\");
+                String derivedName = derivedNameParts[derivedNameParts.length-1];
 
+                srcToDest = derivedName.split("\\.")[0];
+
+                if (csvData.length > 6)
+                {
                     bytesStr = csvData[5];
                     rttStr = csvData[6];
                     ttlStr = csvData[7];
-
-                    if (filename.contains("FIOS 900"))
-                    {
-                        srcToDest = "Cable - FIOS 900 to internet";
-                    }
-                    else if (filename.contains("FIOS 150"))
-                    {
-                        srcToDest = "Cable - FIOS 150 to internet";
-                    }
-                    else if (filename.contains("FIOS 75"))
-                    {
-                        srcToDest = "Cable - FIOS 75 to internet";
-                    }
-                    else if (filename.contains("Mark cable"))
-                    {
-                        srcToDest = "Cable – Spectrum cable FL to internet";
-                    }
-                    else if (filename.contains("Cox"))
-                    {
-                        srcToDest = "Cable - Cox to internet";
-                    }
                 }
 
-                int bytes = bytesStr.equals("timedout") || bytesStr.equals("unreach") ? -1 : Integer.parseInt(bytesStr);
+                int bytes = bytesStr.equals("error") || bytesStr.equals("timeout") || bytesStr.equals("timedout") || bytesStr.equals("unreach") ? -1 : Integer.parseInt(bytesStr);
 
                 int prtt = floatToInt(rttStr);
 
@@ -602,24 +655,31 @@ public class ImportCSV
 
                 String timestamp = yearStr + "-" + monthStr + "-" + dayStr + " " + hourStr + ":" + minuteStr + ":" + secondStr;  //"2020-02-01 01:02:03";
 
-                dataRecordSet.jsonRecordPing = String.format(pingPatternJson, UUID.randomUUID().toString(), timestamp, time, dayofweek, year, month, day, hour, minute, second,
-                        ip, srcToDest, bytes, prtt, ttl);
-
-                if (srcToDest.equals("ACY to OKC"))
+                if (isCsvOutOnly)
                 {
-                    srcToDest = portReMap.get(srcToDest);
-                    // Add Xena record containing prtt data
-                    dataRecordSet.jsonRecordXena = String.format(xenaPatternJson, UUID.randomUUID().toString(), timestamp, time, year, month, day, hour, minute, second,
-                            "ACY", "ACY", 0, "OKC", "OKC", 1, srcToDest,
-                            0, 0, 0, 0, 0,
-                            0, 0, 0, 0, 0,
-                            0, 0, 0, 0,
-                            0, 0, 0, prtt, 0, 0,
-                            0.0, 0,
-                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                            0, 0
-                    );
+                    String csvRecordSet = String.format(pingPatternCsv, timestamp, dayofweek,ip, srcToDest, bytes, prtt, ttl);
+                    dataRecordSet.csvRecordPing = csvRecordSet;
+                }
+                else
+                {
+                    dataRecordSet.jsonRecordPing = String.format(pingPatternJson, UUID.randomUUID().toString(), timestamp, time, dayofweek, year, month, day, hour, minute, second,
+                            ip, srcToDest, bytes, prtt, ttl);
+                    if (srcToDest.equals("ACY to OKC"))
+                    {
+                        srcToDest = portReMap.get(srcToDest);
+                        // Add Xena record containing prtt data
+                        dataRecordSet.jsonRecordXena = String.format(xenaPatternJson, UUID.randomUUID().toString(), timestamp, time, year, month, day, hour, minute, second,
+                                "ACY", "ACY", 0, "OKC", "OKC", 1, srcToDest,
+                                0, 0, 0, 0, 0,
+                                0, 0, 0, 0, 0,
+                                0, 0, 0, 0,
+                                0, 0, 0, prtt, 0, 0,
+                                0.0, 0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0, 0
+                        );
+                    }
                 }
             }
             else
@@ -768,7 +828,7 @@ public class ImportCSV
     private static int floatToInt(String floatstr)
     {
         String[] floatstrSplit = floatstr.split("\\.");
-        int intVal = floatstr.equals("timedout") || floatstr.equals("unreach") ? -1 : Integer.parseInt(floatstrSplit[0]);
+        int intVal = floatstr.equals("error") || floatstr.equals("timeout") || floatstr.equals("timedout") || floatstr.equals("unreach") ? -1 : Integer.parseInt(floatstrSplit[0]);
         if (floatstrSplit.length > 1 && Integer.parseInt(floatstrSplit[1]) >= 5)
             intVal++;
         return intVal;
@@ -855,24 +915,6 @@ public class ImportCSV
             if (con != null) con.disconnect();
         }
     }
-}
-class DataRecordSet
-{
-    public String jsonRecordXena;
-    public String jsonRecordPing;
-    public String jsonRecordException;
-    public String csvRecordXena;
-    public String csvRecordPing;
-}
 
-class XenaTimestamp
-{
-      public int Year;
-      public int Month;
-      public int Day;
-      public int Hour;
-      public int Minute;
-      public int Second;
-      public String Timestamp;
-      public String Time;
+*/
 }
