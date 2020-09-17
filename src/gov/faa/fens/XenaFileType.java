@@ -3,9 +3,9 @@ package gov.faa.fens;
 public class XenaFileType extends FileType
 {
 
+
     XenaFileType()
     {
-        super();
 
         PatternJson = "{\"index\":{\"_id\":\"%s\"}}\n{\"timestamp\":\"%s\",\"time\":\"%s\",\"year\":\"%d\",\"month\":\"%d\",\"day\":\"%d\",\"hour\":\"%d\",\"minute\":\"%d\",\"second\":\"%d\"," +
         "\"srcport\":\"%s\",\"srcname\":\"%s\",\"sid\":\"%d\",\"destport\":\"%s\",\"destname\":\"%s\",\"tid\":\"%d\",\"srctodest\":\"%s\"," +
@@ -18,7 +18,7 @@ public class XenaFileType extends FileType
         "\"jittercurr\":\"%f\",\"jittercurrmin\":\"%f\",\"jittercurrmax\":\"%f\",\"jitteravg\":\"%f\",\"jittermin\":\"%f\",\"jittermax\":\"%f\"," +
         "\"rxpauseframes\":\"%d\",\"rxpfcframes\":\"%d\"" +
         "}\n";
-        UrlString = "/xenapr/_bulk?pretty";
+        UrlPattern = "/xenapr/_bulk?pretty";
 
         PatternCsv = "\"%s\"," +
             "\"%s\",\"%s\",%d,\"%s\",\"%s\",%d,\"%s\"," +

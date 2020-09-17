@@ -17,6 +17,7 @@ public class MapManager
     public static final Map<String, String> portReMapA = new HashMap<>();
     public static final Map<String, String> portReMapB = new HashMap<>();
     public static final Map<String, String> portReMapC = new HashMap<>();
+    public static final Map<String, FileType> mapFileType = new HashMap<>();
 
     static
     {
@@ -149,6 +150,11 @@ public class MapManager
         monthMap.put("Oct", "10");
         monthMap.put("Nov", "11");
         monthMap.put("Dec", "12");
+
+        mapFileType.put("xena", new XenaFileType());
+        mapFileType.put("ping", new PingFileType());
+        mapFileType.put("histo", new HistoFileType());
+        mapFileType.put("ploss", new PLossFileType());
 
     }
 
