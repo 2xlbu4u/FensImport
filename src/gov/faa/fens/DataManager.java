@@ -1,5 +1,7 @@
 package gov.faa.fens;
 
+import com.sun.org.apache.xpath.internal.objects.XString;
+
 import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -118,6 +120,13 @@ public class DataManager
 
     public static void FormatData(String[] csvData, DataRecordSet dataRecordSet) throws Exception
     {
+        if (dataRecordSet.OutFileType instanceof PcapFileType)
+        {
+            dataRecordSet.OutFileType.Record = String.format(dataRecordSet.OutFileType.PatternCsv, csvData[0],csvData[1],csvData[2],csvData[3],csvData[4]);
+            return;
+        }
+         //dataRecordSet.OutFileType.Record = String.format(dataRecordSet.OutFileType.PatternCsv,
+
         if (csvData.length < 6 || (csvData.length > 6 && csvData.length < 9))
         {
             System.out.println("Not enough data for valid record");
@@ -144,6 +153,7 @@ public class DataManager
                 portMap = MapManager.portMapC;
                 portReMap = MapManager.portReMapC;
             }
+
 
             if (dataRecordSet.OutFileType instanceof PingFileType || dataRecordSet.OutFileType instanceof PLossFileType)
             {
@@ -285,7 +295,7 @@ public class DataManager
 
                 Boolean isTMobile = dataRecordSet.Filename.contains("T-Mobile");
                 Boolean isVZW = dataRecordSet.Filename.contains("VZW");
-                Boolean isXena = dataRecordSet.Filename.equals("xena");
+                Boolean isXena = dataRecordSet.OutFileType instanceof XenaFileType;
                 Boolean isException = dataRecordSet.Filename.equals("exception");
 
                 String srcport = csvData[1];
@@ -419,8 +429,8 @@ public class DataManager
     {
         List<DataRecordSet> recordSetList = new ArrayList<>();
 
-        BufferedReader csvReader = null;
-
+        BufferedReader fileReader = null;
+        FileType outFType = _dataRecordSet.OutFileType;
         List<String> fileList = new ArrayList<>();
         try
         {
@@ -436,18 +446,19 @@ public class DataManager
             for (File nextFileToInspect : filesToInspect)
             {
                 String fullFilename = nextFileToInspect.getAbsolutePath();
-                if (!fullFilename.endsWith(".csv"))
+                if (outFType instanceof PcapFileType && !fullFilename.toLowerCase().contains("wireshark"))
+                    continue;
+                else if (!(outFType instanceof PcapFileType) && !fullFilename.endsWith(".csv"))
                     continue;
                 fileList.add(fullFilename);
             }
 
             if (fileList.size() == 0)
             {
-                System.out.println("No csv files to process, exiting");
+                System.out.println("No files to process, exiting");
                 System.exit(1);
             }
 
-            int linecount = 0;
             for (String nextFile : fileList)
             {
                 DataRecordSet dataRecordSet = new DataRecordSet(_dataRecordSet);
@@ -455,59 +466,112 @@ public class DataManager
 
                 System.out.println("Reading data from: " + dataRecordSet.Filename);
 
-                csvReader = new BufferedReader(new FileReader(nextFile));
+                fileReader = new BufferedReader(new FileReader(nextFile));
 
                 String row = null;
                 String header = null;
-                FileType fileType = null;
+                int rowCount = 0;
                 try
                 {
                     dataRecordSet.OldNewseqerr = new int[]{0};
-                    while ((row = csvReader.readLine()) != null)
+                    startReader:
+                    while ((row = fileReader.readLine()) != null)
                     {
-                        if (header == null)
+                        rowCount++;
+                        if (_dataRecordSet.OutFileType instanceof PcapFileType)
                         {
-                            header = row;
-//                            if (header.startsWith("Date"))
-//                                dataRecordSet.OutFileTypePing = new PingFileType(hostname);
-//                            else if (nextFile.contains("VZW") || nextFile.contains("T-Mobile"))
-//                                dataRecordSet.OutFileTypeException = new ExceptionFileType(hostname);
-//                            else if (header.startsWith("Timestamp"))
-//                                dataRecordSet.OutFileTypeXena = new XenaFileType(hostname);
-//                            else if (header.contains("Distribution"))
-//                                dataRecordSet.OutFileTypeHisto = new HistoFileType();
-                            continue;
+                            if (row.length() == 0 || row.startsWith("No"))
+                                continue;
+
+                            // Packet info
+                            String[] packetInfo = row.split("\\s+");
+                            String timestamp = packetInfo[2] + " " + packetInfo[3];
+                            if (!packetInfo[4].equals(MapManager.pcapSourceIP))
+                            {
+                                while (!row.startsWith("No"))
+                                {
+                                    // Not interested in these packets
+                                    row = fileReader.readLine();
+                                    if (row == null)
+                                        break startReader;
+                                    rowCount++;
+                                }
+                                continue;
+                            }
+                            String srcname = MapManager.pcapIpMap.get(packetInfo[4]);
+                            String destname = MapManager.pcapIpMap.get(packetInfo[5]);
+                            String srctodest =  String.format("%s to %s", srcname, destname);
+                            // Blank row
+                            row = fileReader.readLine();
+                            rowCount++;
+                            // Start of data
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 0; i < 8; i++)
+                            {
+                                // Only last 82 so skip first 2 lines
+                                row = fileReader.readLine();
+                                rowCount++;
+                                if (i < 2)
+                                    continue;
+                                String[] datasplit =  row.split("\\s+");
+                                List<String> dataRow = Arrays.asList(datasplit);
+                                int startId = 1;
+                                if (i == 2)
+                                    startId = 11;
+                                int endId = 17;
+                                    if (i == 7)
+                                        endId = 13;
+                                if (i > 2 )
+                                    sb.append(" ");
+                                List<String> dataBytes = dataRow.subList(startId, endId);
+                                sb.append(String.join(" ", dataBytes));
+                            }
+                            String datBytesField = sb.toString();
+                            String normalRow = String.format("%s,%s,%s,%s,%s", timestamp, srcname, destname, srctodest, datBytesField);
+                            String[] rowData = normalRow.split(",");
+                            dataRecordSet.Rows.add(rowData);
                         }
-                        String[] csvData = row.split(",");
-                        if (csvData.length == 0)
+                        else
                         {
-                            System.out.println("Empty data row, rejected");
-                            continue;
+                            if (header == null)
+                            {
+                                header = row;
+                                continue;
+                            }
+                            String[] rowData = row.split(",");
+                            if (rowData.length == 0)
+                            {
+                                System.out.println("Empty data row, rejected rowcount: " + rowCount);
+                                continue;
+                            }
+                            if (rowData.length < 5)
+                            {
+                                System.out.println("Bad data row, rejected: rowcount: " +  rowCount);
+                                continue;
+                            }
+                            dataRecordSet.Rows.add(rowData);
                         }
-                        if (csvData.length < 5)
-                        {
-                            System.out.println("Bad data row, rejected: " + row);
-                            continue;
-                        }
-                        dataRecordSet.Rows.add(csvData);
                     }
+
                     recordSetList.add(dataRecordSet);
                 }
                 catch(Exception ex)
                 {
-                    System.out.println("Bad data row, rejected: " + row + "\n" + ex);
+                    System.out.println("Bad data row, rejected: rowcount: " +  rowCount + "\n" + ex);
+                    ex.printStackTrace();
                 }
             }
         }
         catch(Exception ex)
         {
             System.out.println("Bad ProcessInputFiles: " + ex);
+            ex.printStackTrace();
         }
         finally
         {
-            if (csvReader != null)
+            if (fileReader != null)
             {
-                csvReader.close();
+                fileReader.close();
             }
         }
 
@@ -631,6 +695,9 @@ public class DataManager
                 {
                     dataRecordSet.OutWriter.append(dataRecordSet.OutFileType.Sb.toString());
                     System.out.println("Loaded " + dataRecordSet.OutFileType.Sb.length() + " Bytes ");
+                    dataRecordSet.OutFileType.BlockCounter = FileType.BLOCK_SIZE;
+                    dataRecordSet.OutFileType.Sb = new StringBuffer();
+
                 }
                 else
                     dataRecordSet.OutFileType.Sb = sendJsonData(dataRecordSet.OutFileType);

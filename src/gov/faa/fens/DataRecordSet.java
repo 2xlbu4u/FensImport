@@ -31,10 +31,8 @@ public class DataRecordSet
         Filename = dataRecordSet.Filename;
         Hostname = dataRecordSet.Hostname;
         RootFolder = dataRecordSet.RootFolder;
-        Rows = dataRecordSet.Rows;
         OutFileType = dataRecordSet.OutFileType;
         OutWriter = dataRecordSet.OutWriter;
-        OldNewseqerr = dataRecordSet.OldNewseqerr;
     }
 
 };

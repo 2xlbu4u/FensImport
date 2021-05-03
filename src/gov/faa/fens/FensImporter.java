@@ -6,77 +6,6 @@ import java.util.*;
 
 public class FensImporter
 {
-    /*
-    private static String xenaHeaderCsv = "timestamp," +
-            "srcport,srcname,sid,destport,destname,tid,srctodest," +
-            "txl1bps,txbps,txfps,txbytes,txframes,"  +
-            "rxl1bps,rxbps,rxfps,rxbytes,rxframes,"  +
-            "txnonp1dbytes,txnonp1dframes,rxnonp1dbytes,rxnonp1dframes,"  +
-            "rxfcserrors,rxseqerr,packetlossps,prtt,rxmiserr,rxp1derr,"  +
-            "rxber,rxbercurr,"+
-            "latencycurr,latencycurrmin,latencycurrmax,latencyavg,latencymin,latencymax," +
-            "jittercurr,jittercurrmin,jittercurrmax,jitteravg,jittermin,jittermax," +
-            "rxpauseframes,rxpfcframes";
-
-
-    private static String pingHeaderCsv = "timestamp,dayofweek,ip,srctodest,bytes,rtt,ttl";
-
-    private static String pingPatternCsv = "\"%s\",%d,\"%s\",\"%s\",%d,%d,%d";
-
-    private static String xenaPatternCsv = "\"%s\"," +
-            "\"%s\",\"%s\",%d,\"%s\",\"%s\",%d,\"%s\"," +
-            "%d,%d,%d,%d,%d," +
-            "%d,%d,%d,%d,%d," +
-            "%d,%d,%d,%d," +
-            "%d,%d,%d,%d,%d,%d," +
-            "%f,%d," +
-            "%f,%f,%f,%f,%f,%f," +
-            "%f,%f,%f,%f,%f,%f," +
-            "%d,%d";
-
-    private static String pingPatternJson = "{\"index\":{\"_id\":\"%s\"}}\n{\"timestamp\":\"%s\",\"time\":\"%s\",\"dayofweek\":\"%d\",\"year\":\"%d\",\"month\":\"%d\",\"day\":\"%d\",\"hour\":\"%d\",\"minute\":\"%d\",\"second\":\"%d\"," +
-            "\"ip\":\"%s\",\"srctodest\":\"%s\",\"bytes\":\"%d\",\"rtt\":\"%d\",\"ttl\":\"%d\"}\n";
-
-    private static String xenaPatternJson = "{\"index\":{\"_id\":\"%s\"}}\n{\"timestamp\":\"%s\",\"time\":\"%s\",\"year\":\"%d\",\"month\":\"%d\",\"day\":\"%d\",\"hour\":\"%d\",\"minute\":\"%d\",\"second\":\"%d\"," +
-    "\"srcport\":\"%s\",\"srcname\":\"%s\",\"sid\":\"%d\",\"destport\":\"%s\",\"destname\":\"%s\",\"tid\":\"%d\",\"srctodest\":\"%s\"," +
-    "\"txl1bps\":\"%d\",\"txbps\":\"%d\",\"txfps\":\"%d\",\"txbytes\":\"%d\",\"txframes\":\"%d\"," +
-    "\"rxl1bps\":\"%d\",\"rxbps\":\"%d\",\"rxfps\":\"%d\",\"rxbytes\":\"%d\",\"rxframes\":\"%d\"," +
-    "\"txnonp1dbytes\":\"%d\",\"txnonp1dframes\":\"%d\",\"rxnonp1dbytes\":\"%d\",\"rxnonp1dframes\":\"%d\"," +
-    "\"rxfcserrors\":\"%d\",\"rxseqerr\":\"%d\",\"packetlossps\":\"%d\",\"prtt\":\"%d\",\"rxmiserr\":\"%d\",\"rxp1derr\":\"%d\"," +
-    "\"rxber\":\"%f\",\"rxbercurr\":\"%d\"," +
-    "\"latencycurr\":\"%f\",\"latencycurrmin\":\"%f\",\"latencycurrmax\":\"%f\",\"latencyavg\":\"%f\",\"latencymin\":\"%f\",\"latencymax\":\"%f\"," +
-    "\"jittercurr\":\"%f\",\"jittercurrmin\":\"%f\",\"jittercurrmax\":\"%f\",\"jitteravg\":\"%f\",\"jittermin\":\"%f\",\"jittermax\":\"%f\"," +
-    "\"rxpauseframes\":\"%d\",\"rxpfcframes\":\"%d\"" +
-    "}\n";
-
-    private static final Map<String, String> monthMap = new HashMap<>();
-
-    private static final Map<String, String> portMapA = new HashMap<>();
-    private static final Map<String, String> portMapB = new HashMap<>();
-    private static final Map<String, String> portMapC = new HashMap<>();
-
-    private static final Map<String, String> portReMapA = new HashMap<>();
-    private static final Map<String, String> portReMapB = new HashMap<>();
-    private static final Map<String, String> portReMapC = new HashMap<>();
-
-    private static final String urlPatternXena = "/xenapr/_bulk?pretty";
-    private static final String urlPatternPing = "/pingpr/_bulk?pretty";
-    private static final String urlPatternException = "/xenapexp/_bulk?pretty";
-    private static String urlStringPing;
-    private static String urlStringXena;
-    private static String urlStringException;
-
-    private static final int BLOCK_SIZE = 3000;
-
-    private static int blockCounterXena = BLOCK_SIZE;
-    private static int blockCounterPing = BLOCK_SIZE;
-    private static int blockCounterException = BLOCK_SIZE;
-    private static int blockCounterCsvXena = BLOCK_SIZE;
-    private static int blockCounterCsvPing = BLOCK_SIZE;
-
-    private static Boolean isCsvOutOnly;
-    private static String csvFileType; */
-
     public static void main(String[] args) throws IOException
     {
         DataRecordSet dataRecordSet = new DataRecordSet(){};
@@ -84,8 +13,9 @@ public class FensImporter
         {
             if (args.length < 2)
             {
-                System.out.println("\nUsage: java -jar FensImport.jar http://hostname:port FullPathnameToZipFile");
-                System.out.println("where FullPathnameToZipFile is the full pathname to the file to be imported");
+                System.out.println("\nUsage: java -jar FensImport.jar http://hostname:port FullPathnameToZipFile [-l]");
+                System.out.println("where FullPathnameToZipFile is the full pathname to the file to be imported\n" +
+                        "-l Out File to import into DB");
                 System.exit(1);
             }
 
@@ -104,7 +34,7 @@ public class FensImporter
                 dataRecordSet.OutFileTypeStr = args[3].toLowerCase();
             }
 
-            if (dataRecordSet.OutFileTypeStr.equals("l")  && ! DataManager.TestConnection(hostname))
+            if (dataRecordSet.OutFileTypeStr.equals("-l")  && ! DataManager.TestConnection(hostname))
             {
                 System.out.println("Could not connect to Kibana");
                 System.exit(1);
@@ -123,15 +53,15 @@ public class FensImporter
 
             List<DataRecordSet> recordSetList = DataManager.ProcessInputFiles(dataRecordSet);
 
-            boolean isExport = dataRecordSet.ProcessType.equals("x");
+            boolean isExport = dataRecordSet.ProcessType.equals("-x");
             if (isExport)
             {
-                String outFileRoot = (filePath.endsWith(".csv")) ? filePath.substring(0, filePath.lastIndexOf("\\")) : dataRecordSet.RootFolder.getName();
+                String outFileRoot = (filePath.endsWith(".csv")) ? filePath.substring(0, filePath.lastIndexOf("\\")) : dataRecordSet.RootFolder.getAbsolutePath();
                 String outFilename = outFileRoot + "\\outData.txt";
 
                 Files.deleteIfExists(new File(outFilename).toPath());
                 dataRecordSet.OutWriter = new BufferedWriter(new FileWriter(outFilename, true));
-                dataRecordSet.OutWriter.append(DBFileType.HeaderCsv).append("\n");
+                dataRecordSet.OutWriter.append(dataRecordSet.OutFileType.HeaderCsv).append("\n");
             }
 
             if (dataRecordSet.OutFileType instanceof HistoFileType)
@@ -142,6 +72,7 @@ public class FensImporter
             {
                 for (DataRecordSet _dataRecordSet : recordSetList)
                 {
+                    _dataRecordSet.OutWriter =  dataRecordSet.OutWriter;
                     String loadExp = isExport ? "Exporting " : "Loading ";
                     System.out.println(loadExp + _dataRecordSet.Filename);
                     DataManager.OutputData(_dataRecordSet);

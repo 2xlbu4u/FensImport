@@ -18,7 +18,9 @@ public class MapManager
     public static final Map<String, String> portReMapB = new HashMap<>();
     public static final Map<String, String> portReMapC = new HashMap<>();
     public static final Map<String, FileType> mapFileType = new HashMap<>();
-
+    public static final Map<String, String> pcapIpMap = new HashMap<>();
+    public static final String pcapSourceIP;
+    public static final String pcapDestIP;
     static
     {
         // Maps
@@ -155,7 +157,13 @@ public class MapManager
         mapFileType.put("ping", new PingFileType());
         mapFileType.put("histo", new HistoFileType());
         mapFileType.put("ploss", new PLossFileType());
+        mapFileType.put("pcap", new PcapFileType());
 
+        pcapSourceIP = "192.168.10.27";
+        pcapDestIP = "192.168.10.34";
+
+        pcapIpMap.put(pcapSourceIP, "Pepwave P4");
+        pcapIpMap.put(pcapDestIP, "Pepwave P5");
     }
 
 }

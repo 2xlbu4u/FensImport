@@ -1,0 +1,40 @@
+
+Technology, Testname added everywhere
+"LTE", "BL7-2a"
+
+No cable
+
+Chariot mix raw only
+
+LTE Cellular Quality raw
+
+
+Xena Data Traffic (xena)
+Timestamp,SrcPort,SID,DestPort,TID,TxL1Bps,TxBps,TxFps,TxBytes,TxFrames,RxL1Bps,RxBps,RxFps,RxBytes,RxFrames,RxFcsErrors,RxSeqErr,RxPckLossRatio,RxMisErr,RxPl
+
+Ixia ixchariot (ix_chariot)  Note: These are all the same except for first few columns. It will need null values injected for missing data prior to upload
+
+timestamp,                                                    Source IP,Destination IP,Throughput,Avg Throughput,Min Throughput,Max Throughput,Total Measured Time,Total Bytes Sent,Total By
+timestamp,application,                              Source IP,Destination IP,Throughput,Avg Throughput,Min Throughput,Max Throughput,Total Measured Time,Total Bytes Sent,Total By
+* timestamp,mix,                                            Source IP,Destination IP,Throughput,Avg Throughput,Min Throughput,Max Throughput,Total Measured Time,Total Bytes Sent,Total By
+timestamp,mix,application,                      Source IP,Destination IP,Throughput,Avg Throughput,Min Throughput,Max Throughput,Total Measured Time,Total Bytes Sent,Total By
+timestamp,mix,application,user,              Source IP,Destination IP,Throughput,Avg Throughput,Min Throughput,Max Throughput,Total Measured Time,Total Bytes Sent,Total By
+
+* Only mix needed
+
+
+IXia ixchariot User Info (ix_chariot_user)
+timestamp,User,Mix,Application,Direction,Source Endpoint Name,Destination Endpoint Name,Source Endpoint Location,Destination Endpoint Location,Source Endpoint
+
+Pepwave wan_quality (wan_quality)
+WAN name        Type      Cell ID   Carrier  Band     LTE - RSRP          LTE - SINR              LTE - RSRQ          Latency MNC     MCC      Time     Latitude              Longitude           Altitude
+
+Xena Histogram (xena_jitter_hist)  Note: Data would need to be converted into 2 columns start, packets prior to upload
+RX Jitter Distribution (ns) (Histogram)
+X (start):,-1,0,1048576,2097152,3145728,4194304,5242880,6291456,7340032,8388608,94
+Y (packets):,0,115836,49635,15214,8689,8140,14373,34530,163212,11904,4683,2815,245
+
+Xena Histogram (xena_latency_hist)  Note: data would need to be converted into 2 columns start, packets
+RX Latency Distribution (ns)
+X (start):,-1,0,2097152,4194304,6291456,8388608,10485760,125829
+Y (packets):,0,0,0,0,0,0,0,0,0,0,10,908,2833,3351,12855,63229,8

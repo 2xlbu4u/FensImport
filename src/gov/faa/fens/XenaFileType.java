@@ -19,7 +19,7 @@ public class XenaFileType extends FileType
         "\"rxpauseframes\":\"%d\",\"rxpfcframes\":\"%d\"" +
         "}\n";
         UrlPattern = "/xenapr/_bulk?pretty";
-
+        HeaderCsv = "timestamp,srcport,srcname,sid,destport,destname,tid,srctodest,txl1bps,txbps,txfps,txbytes,txframes,rxl1bps,rxbps,rxfps,rxbytes,rxframes,txnonp1dbytes,txnonp1dframes,rxnonp1dbytes,rxnonp1dframes,rxfcserrors,rxseqerr,packetlossps,prtt,rxmiserr,rxp1derr,rxber,rxbercurr,latencycurr,latencycurrmin,latencycurrmax,latencyavg,latencymin,latencymax,jittercurr,jittercurrmin,jittercurrmax,jitteravg,jittermin,jittermax,rxpauseframes,rxpfcframes";
         PatternCsv = "\"%s\"," +
             "\"%s\",\"%s\",%d,\"%s\",\"%s\",%d,\"%s\"," +
             "%d,%d,%d,%d,%d," +
