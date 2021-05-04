@@ -1,10 +1,9 @@
 package gov.faa.fens;
 
-public class XenaFileType extends FileType
+public class ChariotMixFileType extends FileType
 {
-    XenaFileType()
+    ChariotMixFileType()
     {
-
         PatternJson = "{\"index\":{\"_id\":\"%s\"}}\n{\"timestamp\":\"%s\",\"time\":\"%s\",\"year\":\"%d\",\"month\":\"%d\",\"day\":\"%d\",\"hour\":\"%d\",\"minute\":\"%d\",\"second\":\"%d\"," +
         "\"srcport\":\"%s\",\"srcname\":\"%s\",\"sid\":\"%d\",\"destport\":\"%s\",\"destname\":\"%s\",\"tid\":\"%d\",\"srctodest\":\"%s\"," +
         "\"txl1bps\":\"%d\",\"txbps\":\"%d\",\"txfps\":\"%d\",\"txbytes\":\"%d\",\"txframes\":\"%d\"," +
@@ -17,7 +16,7 @@ public class XenaFileType extends FileType
         "\"rxpauseframes\":\"%d\",\"rxpfcframes\":\"%d\"" +
         "}\n";
         UrlPattern = "/xenapr/_bulk?pretty";
-        HeaderCsv = "timestamp,srcport,srcname,sid,destport,destname,tid,srctodest,txl1bps,txbps,txfps,txbytes,txframes,rxl1bps,rxbps,rxfps,rxbytes,rxframes,txnonp1dbytes,txnonp1dframes,rxnonp1dbytes,rxnonp1dframes,rxfcserrors,rxseqerr,packetlossps,prtt,rxmiserr,rxp1derr,rxber,rxbercurr,latencycurr,latencycurrmin,latencycurrmax,latencyavg,latencymin,latencymax,jittercurr,jittercurrmin,jittercurrmax,jitteravg,jittermin,jittermax,rxpauseframes,rxpfcframes";
+        HeaderCsv = "";
         PatternCsv = "\"%s\"," +
             "\"%s\",\"%s\",%d,\"%s\",\"%s\",%d,\"%s\"," +
             "%d,%d,%d,%d,%d," +
@@ -28,12 +27,5 @@ public class XenaFileType extends FileType
             "%f,%f,%f,%f,%f,%f," +
             "%f,%f,%f,%f,%f,%f," +
             "%d,%d";
-
-    }
-
-    @Override
-    public void ExportData(DataRecordSet dataRecordSet)
-    {
-
     }
 }

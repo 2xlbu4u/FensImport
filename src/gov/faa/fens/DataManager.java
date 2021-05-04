@@ -1,7 +1,5 @@
 package gov.faa.fens;
 
-import com.sun.org.apache.xpath.internal.objects.XString;
-
 import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -70,8 +68,8 @@ public class DataManager
             if (!currentPacketMap.containsKey(portName))
                 currentPacketMap.put(portName, new ArrayList<>());
 
-            String[] timeRow = dataRecordSet.Rows.get(0);
-            String[] countRow = dataRecordSet.Rows.get(1);
+            String[] timeRow = dataRecordSet.InRows.get(0);
+            String[] countRow = dataRecordSet.InRows.get(1);
 
             for (int i = 2; i < timeRow.length; i++)
             {
@@ -120,8 +118,10 @@ public class DataManager
 
     public static void FormatData(String[] csvData, DataRecordSet dataRecordSet) throws Exception
     {
+        dataRecordSet.SetOutRecordHeader();
         if (dataRecordSet.OutFileType instanceof PcapFileType)
         {
+
             dataRecordSet.OutFileType.Record = String.format(dataRecordSet.OutFileType.PatternCsv, csvData[0],csvData[1],csvData[2],csvData[3],csvData[4]);
             return;
         }
@@ -425,6 +425,24 @@ public class DataManager
         }
 
     }
+    public static void FileToStringItemList(DataRecordSet dataRecordSet) throws Exception
+    {
+        ArrayList<String[]> retList = new ArrayList<>();
+        BufferedReader fileReader = new BufferedReader(new FileReader(dataRecordSet.Filename));
+        String row;
+        while ((row = fileReader.readLine()) != null)
+        {
+            String[] rowItems = row.split(",");
+            retList.add(rowItems);
+        }
+        dataRecordSet.InRows = retList;
+    }
+
+    public static void exportFile(DataRecordSet dataRecordSet) throws Exception
+    {
+        dataRecordSet.OutFileType.ExportData(dataRecordSet);
+    }
+
     public static List<DataRecordSet> ProcessInputFiles(DataRecordSet _dataRecordSet) throws Exception
     {
         List<DataRecordSet> recordSetList = new ArrayList<>();
@@ -434,7 +452,7 @@ public class DataManager
         List<String> fileList = new ArrayList<>();
         try
         {
-            File rootFolder = _dataRecordSet.RootFolder;
+            File rootFolder = _dataRecordSet.RootFolderOrFile;
             File[] filesToInspect = rootFolder.isFile() ? new File[]{rootFolder} : rootFolder.listFiles();
 
             if (filesToInspect == null || filesToInspect.length == 0)
@@ -529,7 +547,7 @@ public class DataManager
                             String datBytesField = sb.toString();
                             String normalRow = String.format("%s,%s,%s,%s,%s", timestamp, srcname, destname, srctodest, datBytesField);
                             String[] rowData = normalRow.split(",");
-                            dataRecordSet.Rows.add(rowData);
+                            dataRecordSet.InRows.add(rowData);
                         }
                         else
                         {
@@ -549,7 +567,7 @@ public class DataManager
                                 System.out.println("Bad data row, rejected: rowcount: " +  rowCount);
                                 continue;
                             }
-                            dataRecordSet.Rows.add(rowData);
+                            dataRecordSet.InRows.add(rowData);
                         }
                     }
 
@@ -676,7 +694,7 @@ public class DataManager
     {
         try
         {
-            for (String[] csvData : dataRecordSet.Rows)
+            for (String[] csvData : dataRecordSet.InRows)
             {
                 DataManager.FormatData(csvData, dataRecordSet);
                 if (dataRecordSet.OutWriter != null)
