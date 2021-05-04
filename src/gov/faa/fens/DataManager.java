@@ -19,110 +19,16 @@ public class DataManager
         //_FileType = fileType;
     }
 
-    private static int floatToInt(String floatstr)
+
+
+    public static void FormatDataRow(String[] csvData, DataRecordSet dataRecordSet) throws Exception
     {
-        String[] floatstrSplit = floatstr.split("\\.");
-        int intVal = floatstr.equals("error") || floatstr.equals("timeout") || floatstr.equals("timedout") || floatstr.equals("unreach") ? -1 : Integer.parseInt(floatstrSplit[0]);
-        if (floatstrSplit.length > 1 && Integer.parseInt(floatstrSplit[1]) >= 5)
-            intVal++;
-        return intVal;
-    }
-
-    private static XenaTimestamp buildXenaTimestamp(String timestampIn)
-    {
-        String[] dateTime = timestampIn.split("-");
-        XenaTimestamp xenaTimestamp = new XenaTimestamp();
-
-        xenaTimestamp.Year = Integer.parseInt(dateTime[0].substring(0, 4));
-        xenaTimestamp.Month = Integer.parseInt(dateTime[0].substring(4, 6));
-        xenaTimestamp.Day = Integer.parseInt(dateTime[0].substring(6, 8));
-
-        xenaTimestamp.Hour = Integer.parseInt(dateTime[1].substring(0, 2));
-        xenaTimestamp.Minute = Integer.parseInt(dateTime[1].substring(2, 4));
-        xenaTimestamp.Second = Integer.parseInt(dateTime[1].substring(4, 6));
-
-        xenaTimestamp.Time = dateTime[1].substring(0, 2) + ":" + dateTime[1].substring(2, 4) + ":" + dateTime[1].substring(4, 6);
-        xenaTimestamp.Timestamp = dateTime[0].substring(0, 4) + "-" + dateTime[0].substring(4, 6) + "-" + dateTime[0].substring(6, 8) + " " + xenaTimestamp.Time;   //"2020-02-01 01:02:03";
-
-        return xenaTimestamp;
-    }
-
-    public static void ExportHistogram(File rootFolder, List<DataRecordSet> recordSetList) throws Exception
-    {
-        BufferedWriter outWriter = null;
-
-        Map<String, List<TimePacketRecord>> jitterPacketMap = new HashMap<>();
-        Map<String, List<TimePacketRecord>> latencyPacketMap = new HashMap<>();
-        Map<String, List<TimePacketRecord>> currentPacketMap = null;
-
-        for (DataRecordSet dataRecordSet : recordSetList)
-        {
-            if (dataRecordSet.Filename.contains("Jitter"))
-                currentPacketMap = jitterPacketMap;
-            else if (dataRecordSet.Filename.contains("Latency"))
-                currentPacketMap = latencyPacketMap;
-
-            String[] segments = dataRecordSet.Filename.split(" ");
-            String nameExt = segments[segments.length-1];
-            String portName = nameExt.split("\\.")[0];
-            if (!currentPacketMap.containsKey(portName))
-                currentPacketMap.put(portName, new ArrayList<>());
-
-            String[] timeRow = dataRecordSet.InRows.get(0);
-            String[] countRow = dataRecordSet.InRows.get(1);
-
-            for (int i = 2; i < timeRow.length; i++)
-            {
-                TimePacketRecord timePacketRecord = new TimePacketRecord(timeRow[i], countRow[i]);
-                currentPacketMap.get(portName).add(timePacketRecord);
-            }
-        }
-
-        String jitterFilename = rootFolder + "\\jitter.export";
-        ExportHistogramData(jitterFilename, jitterPacketMap);
-
-        String latencyFilename = rootFolder + "\\latency.export";
-        ExportHistogramData(latencyFilename, latencyPacketMap);
-    }
-
-    public static void ExportHistogramData(String filename, Map<String, List<TimePacketRecord>> packetMap) throws Exception
-    {
-        Files.deleteIfExists(new File(filename).toPath());
-        BufferedWriter outWriter = new BufferedWriter(new FileWriter(filename, true));
-        Set<String> _keys = packetMap.keySet();
-        String[] keys = _keys.toArray(new String[_keys.size()]);
-        Arrays.sort(keys);
-        String topheader = String.join(",,", keys);
-        outWriter.append(topheader).append(",\n");
-        outWriter.append(HistoFileType.TitleHeader);
-
-        StringBuffer sbDataRow = new StringBuffer();
-
-        DecimalFormat df = new DecimalFormat("0.00");
-        for (int i = 0; i < 253; i++)
-        {
-            List<String> rowValues = new ArrayList<>();
-            for (String key : keys)
-            {
-                List<TimePacketRecord> timePacketRecordList = packetMap.get(key);
-                TimePacketRecord timePacketRecord = timePacketRecordList.get(i);
-                double dVal = Double.parseDouble(timePacketRecord.TimeBucket)/1000000.0;
-                rowValues.add(df.format(dVal));
-                rowValues.add(timePacketRecord.PacketCount);
-            }
-            String outRow = String.join(",",rowValues);
-            outWriter.append(outRow).append("\n");
-        }
-        outWriter.close();
-    }
-
-    public static void FormatData(String[] csvData, DataRecordSet dataRecordSet) throws Exception
-    {
+        String Record;
         dataRecordSet.SetOutRecordHeader();
         if (dataRecordSet.OutFileType instanceof PcapFileType)
         {
 
-            dataRecordSet.OutFileType.Record = String.format(dataRecordSet.OutFileType.PatternCsv, csvData[0],csvData[1],csvData[2],csvData[3],csvData[4]);
+            Record = String.format(dataRecordSet.OutFileType.PatternCsv, csvData[0],csvData[1],csvData[2],csvData[3],csvData[4]);
             return;
         }
          //dataRecordSet.OutFileType.Record = String.format(dataRecordSet.OutFileType.PatternCsv,
@@ -247,9 +153,9 @@ public class DataManager
 
                 int bytes = bytesStr.equals("error") || bytesStr.equals("timeout") || bytesStr.equals("timedout") || bytesStr.equals("unreach") ? -1 : Integer.parseInt(bytesStr);
 
-                int prtt = floatToInt(rttStr);
+                int prtt = 0;//floatToInt(rttStr);
 
-                int ttl = floatToInt(ttlStr);
+                int ttl = 0;//floatToInt(ttlStr);
 
                 String timestamp = yearStr + "-" + monthStr + "-" + dayStr + " " + hourStr + ":" + minuteStr + ":" + secondStr;  //"2020-02-01 01:02:03";
 
@@ -259,11 +165,11 @@ public class DataManager
                     if (dataRecordSet.OutFileType instanceof PLossFileType)
                     {
                         int isLoss =  prtt == -1 ? 1 : 0;
-                        dataRecordSet.OutFileType.Record = String.format(dataRecordSet.OutFileType.PatternJson, UUID.randomUUID().toString(), timestamp, dayofweek, ip, srcToDest, isLoss);
+                        Record = String.format(dataRecordSet.OutFileType.PatternJson, UUID.randomUUID().toString(), timestamp, dayofweek, ip, srcToDest, isLoss);
                     }
                     else if (dataRecordSet.OutFileType instanceof PingFileType)
                     {
-                        dataRecordSet.OutFileType.Record = String.format(dataRecordSet.OutFileType.PatternJson, UUID.randomUUID().toString(), timestamp, dayofweek, ip, srcToDest, bytes, prtt, ttl);
+                        Record = String.format(dataRecordSet.OutFileType.PatternJson, UUID.randomUUID().toString(), timestamp, dayofweek, ip, srcToDest, bytes, prtt, ttl);
                     }
                 }
                 else
@@ -291,7 +197,7 @@ public class DataManager
             }
             else if (dataRecordSet.OutFileType instanceof XenaFileType)
             {
-                XenaTimestamp xenaTimestamp = buildXenaTimestamp(csvData[0]);
+                XenaTimestamp xenaTimestamp = null;//buildXenaTimestamp(csvData[0]);
 
                 Boolean isTMobile = dataRecordSet.Filename.contains("T-Mobile");
                 Boolean isVZW = dataRecordSet.Filename.contains("VZW");
@@ -361,7 +267,7 @@ public class DataManager
                 // rxber is always nano seconds so make zero
                 Float rxber = 0.0f;
 
-                int rxbercurr = floatToInt(csvData[++i]);
+                int rxbercurr = 0;//floatToInt(csvData[++i]);
 
 
                 Float latencycurr = Float.parseFloat(csvData[++i]);
@@ -390,7 +296,7 @@ public class DataManager
 
                 if (dataRecordSet.OutFileType != null)
                 {
-                    dataRecordSet.OutFileType.Record = String.format(dataRecordSet.OutFileType.PatternCsv, xenaTimestamp.Timestamp,
+                    Record = String.format(dataRecordSet.OutFileType.PatternCsv, xenaTimestamp.Timestamp,
                             srcport, srcname, sid, destport, destname, tid, srctodest,
                             txl1bps, txbps, txfps, txbytes, txframes,
                             rxl1bps, rxbps, rxfps, rxbytes, rxframes,
@@ -403,7 +309,7 @@ public class DataManager
                 }
                 else
                 {
-                    dataRecordSet.OutFileType.Record =
+                    Record =
                             String.format(dataRecordSet.OutFileType.PatternJson, UUID.randomUUID().toString(), xenaTimestamp.Timestamp, xenaTimestamp.Time, xenaTimestamp.Year, xenaTimestamp.Month,
                                     xenaTimestamp.Day, xenaTimestamp.Hour, xenaTimestamp.Minute, xenaTimestamp.Second,
                                     srcport, srcname, sid, destport, destname, tid, srctodest,
@@ -425,23 +331,22 @@ public class DataManager
         }
 
     }
-    public static void FileToStringItemList(DataRecordSet dataRecordSet) throws Exception
+    public static void ImportFileRows(DataRecordSet dataRecordSet) throws Exception
     {
         ArrayList<String[]> retList = new ArrayList<>();
         BufferedReader fileReader = new BufferedReader(new FileReader(dataRecordSet.Filename));
+        dataRecordSet.InRows = new ArrayList<>();
         String row;
         while ((row = fileReader.readLine()) != null)
         {
-            String[] rowItems = row.split(",");
-            retList.add(rowItems);
+            dataRecordSet.InRows.add(row);
         }
-        dataRecordSet.InRows = retList;
     }
 
-    public static void exportFile(DataRecordSet dataRecordSet) throws Exception
+/*    public static void exportFile(DataRecordSet dataRecordSet) throws Exception
     {
         dataRecordSet.OutFileType.ExportData(dataRecordSet);
-    }
+    }*/
 
     public static List<DataRecordSet> ProcessInputFiles(DataRecordSet _dataRecordSet) throws Exception
     {
@@ -546,8 +451,7 @@ public class DataManager
                             }
                             String datBytesField = sb.toString();
                             String normalRow = String.format("%s,%s,%s,%s,%s", timestamp, srcname, destname, srctodest, datBytesField);
-                            String[] rowData = normalRow.split(",");
-                            dataRecordSet.InRows.add(rowData);
+                            dataRecordSet.InRows.add(normalRow);
                         }
                         else
                         {
@@ -567,7 +471,7 @@ public class DataManager
                                 System.out.println("Bad data row, rejected: rowcount: " +  rowCount);
                                 continue;
                             }
-                            dataRecordSet.InRows.add(rowData);
+                            dataRecordSet.InRows.add(row);
                         }
                     }
 
@@ -600,7 +504,7 @@ public class DataManager
     {
         if (fileType != null && outWriter != null)
         {
-            fileType.Sb.append(fileType.Record).append("\n");
+            fileType.Sb.append("").append("\n");
             if (--fileType.BlockCounter <= 0)
             {
                 outWriter.append(fileType.Sb.toString());
@@ -681,9 +585,10 @@ public class DataManager
 
     public static void OutJsonData(FileType fileType) throws Exception
     {
-        if (fileType != null && fileType.Record != null)
+        String Record = null;
+        if (fileType != null && Record != null)
         {
-            fileType.Sb.append(fileType.Record);//.append("\n");
+            fileType.Sb.append(Record);//.append("\n");
             if (--fileType.BlockCounter <= 0)
             {
                 fileType.Sb = sendJsonData(fileType);
@@ -694,9 +599,10 @@ public class DataManager
     {
         try
         {
-            for (String[] csvData : dataRecordSet.InRows)
+            for (String row : dataRecordSet.InRows)
             {
-                DataManager.FormatData(csvData, dataRecordSet);
+                String[] csvData = row.split(",");
+                DataManager.FormatDataRow(csvData, dataRecordSet);
                 if (dataRecordSet.OutWriter != null)
                 {
                     ExportData(dataRecordSet.OutFileType, dataRecordSet.OutWriter);

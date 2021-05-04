@@ -15,8 +15,8 @@ public class DataRecordSet
     public String Filename;
     public String Hostname;
     public File RootFolderOrFile;
-    public List<String[]> InRows = new ArrayList<>();
-    public List<String[]> OutRows = new ArrayList<>();
+    public List<String> InRows = new ArrayList<>();
+    public List<String> OutRows = new ArrayList<>();
     public FileType InFileType;
     public FileType OutFileType;
     public BufferedWriter OutWriter;
@@ -45,7 +45,7 @@ public class DataRecordSet
     }
     public void ExportData() throws Exception
     {
-        OutFileType.ExportData(this);
+        OutFileType.FormatDataRows(this);
     }
     public void SetOutRecordHeader()
     {

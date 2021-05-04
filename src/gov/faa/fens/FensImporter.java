@@ -13,7 +13,7 @@ public class FensImporter
             if (args.length < 3)
             {
                 System.out.println("\nUsage: java -jar FensImport.jar -tTechnology -nTestName FullPathnameToImportFile\n");
-                System.out.println("e.g java -jar FensImport.jar -tLTE -nXena_TR15_P6_Jitter_Re-Run_T-Mobile Test_PW_Sierra ./PostgresImport/Xena_TR15_P6_Jitter_Re-Run_T-Mobile Test_PW_Sierra_20210407_085934.csv\n");
+                System.out.println("e.g java -jar FensImport.jar -tLTE -nXena_TR15_P6_Jitter_Re-Run_T-Mobile \"./PostgresImport/Xena_TR15_P6_Jitter_Re-Run_T-Mobile Test_PW_Sierra_20210407_085934.csv\"\n");
                 System.exit(1);
             }
 
@@ -21,11 +21,11 @@ public class FensImporter
             {
                 if (arg.startsWith("-t"))
                 {
-                    dataRecordSet.Testname = arg.substring(2);
-                }
-                if (arg.startsWith("-n"))
-                {
                     dataRecordSet.Technology = arg.substring(2);
+                }
+                else if (arg.startsWith("-n"))
+                {
+                    dataRecordSet.Testname = arg.substring(2);
                 }
                 else
                 {
@@ -48,7 +48,7 @@ public class FensImporter
             dataRecordSet.OutFileTypeStr = splitName[splitName.length-1];
 
             // Move to the in file type if not csv
-            DataManager.FileToStringItemList(dataRecordSet);
+            DataManager.ImportFileRows(dataRecordSet);
 
             FileType.setInFileType(dataRecordSet);
 
@@ -57,9 +57,6 @@ public class FensImporter
 
             // Export the file
             dataRecordSet.ExportData();
-
-
-
 
           //  List<DataRecordSet> recordSetList = DataManager.ProcessInputFiles(dataRecordSet);
 
@@ -77,17 +74,18 @@ public class FensImporter
 
             if (dataRecordSet.OutFileType instanceof HistoFileType)
             {
-                DataManager.ExportHistogram(dataRecordSet.RootFolderOrFile, recordSetList);
+                dataRecordSet.OutFileType.FormatDataRows(dataRecordSet);
+              //  DataManager.ExportHistogram(dataRecordSet.RootFolderOrFile, recordSetList);
             }
             else
             {
-                for (DataRecordSet _dataRecordSet : recordSetList)
+/*                for (DataRecordSet _dataRecordSet : recordSetList)
                 {
                     _dataRecordSet.OutWriter =  dataRecordSet.OutWriter;
                     String loadExp = isExport ? "Exporting " : "Loading ";
                     System.out.println(loadExp + _dataRecordSet.Filename);
                     DataManager.OutputData(_dataRecordSet);
-                }
+                }*/
             }
             System.out.println("\nCompleted");
 
