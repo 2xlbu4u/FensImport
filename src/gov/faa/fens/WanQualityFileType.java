@@ -1,31 +1,40 @@
 package gov.faa.fens;
 
-public class WanQualityFileType extends FileType
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.text.DecimalFormat;
+import java.util.*;
+
+public class WanFileType extends FileType
 {
-    WanQualityFileType()
+    //   private static String TitleHeader = "timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount\n";
+
+    WanFileType()
     {
-        PatternJson = "{\"index\":{\"_id\":\"%s\"}}\n{\"timestamp\":\"%s\",\"time\":\"%s\",\"year\":\"%d\",\"month\":\"%d\",\"day\":\"%d\",\"hour\":\"%d\",\"minute\":\"%d\",\"second\":\"%d\"," +
-        "\"srcport\":\"%s\",\"srcname\":\"%s\",\"sid\":\"%d\",\"destport\":\"%s\",\"destname\":\"%s\",\"tid\":\"%d\",\"srctodest\":\"%s\"," +
-        "\"txl1bps\":\"%d\",\"txbps\":\"%d\",\"txfps\":\"%d\",\"txbytes\":\"%d\",\"txframes\":\"%d\"," +
-        "\"rxl1bps\":\"%d\",\"rxbps\":\"%d\",\"rxfps\":\"%d\",\"rxbytes\":\"%d\",\"rxframes\":\"%d\"," +
-        "\"txnonp1dbytes\":\"%d\",\"txnonp1dframes\":\"%d\",\"rxnonp1dbytes\":\"%d\",\"rxnonp1dframes\":\"%d\"," +
-        "\"rxfcserrors\":\"%d\",\"rxseqerr\":\"%d\",\"packetlossps\":\"%d\",\"prtt\":\"%d\",\"rxmiserr\":\"%d\",\"rxp1derr\":\"%d\"," +
-        "\"rxber\":\"%f\",\"rxbercurr\":\"%d\"," +
-        "\"latencycurr\":\"%f\",\"latencycurrmin\":\"%f\",\"latencycurrmax\":\"%f\",\"latencyavg\":\"%f\",\"latencymin\":\"%f\",\"latencymax\":\"%f\"," +
-        "\"jittercurr\":\"%f\",\"jittercurrmin\":\"%f\",\"jittercurrmax\":\"%f\",\"jitteravg\":\"%f\",\"jittermin\":\"%f\",\"jittermax\":\"%f\"," +
-        "\"rxpauseframes\":\"%d\",\"rxpfcframes\":\"%d\"" +
-        "}\n";
-        UrlPattern = "/wanqual/_bulk?pretty";
-        HeaderCsv = "";
-        PatternCsv = "\"%s\"," +
-            "\"%s\",\"%s\",%d,\"%s\",\"%s\",%d,\"%s\"," +
-            "%d,%d,%d,%d,%d," +
-            "%d,%d,%d,%d,%d," +
-            "%d,%d,%d,%d," +
-            "%d,%d,%d,%d,%d,%d," +
-            "%f,%d," +
-            "%f,%f,%f,%f,%f,%f," +
-            "%f,%f,%f,%f,%f,%f," +
-            "%d,%d";
+        // 17 cols
+        HeaderCsv = "technology,testname,WAN name,Type,Cell ID,Carrier,Band,LTE - RSRP,LTE - SINR,LTE - RSRQ,Latency,MNC,MCC,Time,Latitude,Longitude,Altitude\n";
+        PatternCsv = "%s,%s,%s,%s,%d,%s,%s,%d,%d,%d,%,%d,%d,%s,%f,%f,%f\n";
+    }
+
+    @Override
+    public void PrepareForExport(DataRecordSet dataRecordSet) throws Exception
+    {
+        String header = null;
+        dataRecordSet.OutFileSuffix = "_wan_quality_db_import.csv";
+
+        for (String row : dataRecordSet.InRows)
+        {
+            //String[] csvData = row.split(",");
+            if (header == null)
+            {
+                header = HeaderCsv;
+                dataRecordSet.OutRows.add(HeaderCsv);
+                continue;
+            }
+            String outrow = String.format("%s,%s,%s\n", dataRecordSet.Technology, dataRecordSet.Testname, row);
+            dataRecordSet.OutRows.add(outrow);
+        }
     }
 }
