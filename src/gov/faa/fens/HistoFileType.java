@@ -14,7 +14,7 @@ public class HistoFileType extends FileType
     HistoFileType()
     {
         HeaderCsv = "technology,testname,time,count\n";
-        PatternCsv = "%s,%s,%d,%d\n";
+        PatternCsv = "\"%s\",\"%s\",%d,%d\n";
     }
 
     @Override
