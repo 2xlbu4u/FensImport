@@ -10,4 +10,5 @@ public class XenaTimestamp
       public int Second;
       public String Timestamp;
       public String Time;
+      public String Date;
 }

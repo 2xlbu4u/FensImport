@@ -701,3 +701,159 @@
     }
 
 */
+
+            /*
+            PatternCsv = "\"%s\",\"%s\",%d,\"%s\",%d," +
+            "%d,%d,%d,%d,%d," +
+            "%d,%d,%d,%d,%d,%d,%d,%d," +
+            "%d,%d,%d,%d" +
+            "%f,%d," +
+            "%f,%f,%f,%f,%f,%f," +
+            "%f,%f,%f,%f,%f,%f,";
+
+            rxl1bps,rxbps,rxfps,rxbytes,rxframes,rxfcserrors,rxseqerr,rxpcklossratio
+            */
+
+
+
+/*                String jsonOutRecord =
+                        String.format(dataRecordSet.OutFileType.PatternJson, UUID.randomUUID().toString(), xenaTimestamp.Timestamp, xenaTimestamp.Time, xenaTimestamp.Year, xenaTimestamp.Month,
+                                xenaTimestamp.Day, xenaTimestamp.Hour, xenaTimestamp.Minute, xenaTimestamp.Second,
+                                srcport,  sid, destport, tid,
+                                txl1bps, txbps, txfps, txbytes, txframes,
+                                rxl1bps, rxbps, rxfps, rxbytes, rxframes,
+                                txnonp1dbytes, txnonp1dframes, rxnonp1dbytes, rxnonp1dframes,
+                                rxfcserrors, rxseqerr, packetlossps, 0, rxmiserr, rxp1derr,
+                                rxber, rxbercurr,
+                                latencycurr, latencycurrmin, latencycurrmax, latencyavg, latencymin, latencymax,
+                                jittercurr, jittercurrmin, jittercurrmax, jitteravg, jittermin, jittermax,
+                                rxpauseframes, rxpfcframes);*/
+
+          //  List<DataRecordSet> recordSetList = DataManager.ProcessInputFiles(dataRecordSet);
+
+       //     String filePath = dataRecordSet.Filename;
+       //     boolean isExport = dataRecordSet.ProcessType.equals("-x");
+       //     if (isExport)
+        //    {
+        //        String outFileRoot = (filePath.endsWith(".csv")) ? filePath.substring(0, filePath.lastIndexOf("\\")) : dataRecordSet.RootFolderOrFile.getAbsolutePath();
+         //       String outFilename = outFileRoot + "\\outData.txt";
+
+         //       Files.deleteIfExists(new File(outFilename).toPath());
+          //      dataRecordSet.OutWriter = new BufferedWriter(new FileWriter(outFilename, true));
+          //      dataRecordSet.OutWriter.append(dataRecordSet.OutFileType.HeaderCsv).append("\n");
+         //   }
+
+        ///    if (dataRecordSet.OutFileType instanceof HistoFileType)
+        //    {
+         //       dataRecordSet.OutFileType.FormatDataRows(dataRecordSet);
+              //  DataManager.ExportHistogram(dataRecordSet.RootFolderOrFile, recordSetList);
+         //   }
+         //   else
+         //   {
+/*                for (DataRecordSet _dataRecordSet : recordSetList)
+                {
+                    _dataRecordSet.OutWriter =  dataRecordSet.OutWriter;
+                    String loadExp = isExport ? "Exporting " : "Loading ";
+                    System.out.println(loadExp + _dataRecordSet.Filename);
+                    DataManager.OutputData(_dataRecordSet);
+                }*/
+           // }
+
+           /*    private static int sendJsonRequest(String urlString, String jsonRecord) throws Exception
+    {
+        HttpURLConnection con = null;
+        BufferedReader in = null;
+        try
+        {
+            URL url = new URL(urlString);
+            con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            con.setDoOutput(true);
+
+            byte[] outJson = jsonRecord.getBytes(StandardCharsets.UTF_8);
+
+            int length = outJson.length;
+            con.setFixedLengthStreamingMode(length);
+            con.setRequestProperty("Content-Type", "application/x-ndjson; charset=UTF-8");
+            con.connect();
+            try (OutputStream os = con.getOutputStream())
+            {
+                os.write(outJson);
+            }
+
+            int status = con.getResponseCode();
+            return status;
+        }
+        finally
+        {
+            if (in != null) in.close();
+            if (con != null) con.disconnect();
+        }
+    }*/
+
+/*    private static StringBuffer sendJsonData(FileType fileType) throws Exception
+    {
+        String urlString = fileType.Hostname + fileType.UrlPattern;
+        int status = sendJsonRequest(urlString, fileType.Sb.toString());
+        System.out.println("Loaded " + fileType.Sb.length() + " Bytes " + status);
+        fileType.BlockCounter = FileType.BLOCK_SIZE;
+        return new StringBuffer();
+    }*/
+
+/*    public static void OutJsonData(FileType fileType) throws Exception
+    {
+        String Record = null;
+        if (fileType != null && Record != null)
+        {
+            fileType.Sb.append(Record);//.append("\n");
+            if (--fileType.BlockCounter <= 0)
+            {
+                fileType.Sb = sendJsonData(fileType);
+            }
+        }
+    }*/
+/*    public static void OutputData(DataRecordSet dataRecordSet) throws Exception
+    {
+        try
+        {
+            for (String row : dataRecordSet.InRows)
+            {
+                String[] csvData = row.split(",");
+                DataManager.FormatDataRow(csvData, dataRecordSet);
+                if (dataRecordSet.OutWriter != null)
+                {
+                    ExportData(dataRecordSet.OutFileType, dataRecordSet.OutWriter);
+                }
+                else
+                {
+                    OutJsonData(dataRecordSet.OutFileType);
+                }
+            }
+
+            if (dataRecordSet.OutFileType.Sb.length() > 0)
+            {
+                if (dataRecordSet.OutWriter != null)
+                {
+                    dataRecordSet.OutWriter.append(dataRecordSet.OutFileType.Sb.toString());
+                    System.out.println("Loaded " + dataRecordSet.OutFileType.Sb.length() + " Bytes ");
+                    dataRecordSet.OutFileType.BlockCounter = FileType.BLOCK_SIZE;
+                    dataRecordSet.OutFileType.Sb = new StringBuffer();
+
+                }
+                else
+                    dataRecordSet.OutFileType.Sb = sendJsonData(dataRecordSet.OutFileType);
+            }
+        }
+        finally
+        {
+
+        }
+    }*/
+
+            //   }
+     //  String rootFolder = "";
+     //   String jitterFilename = rootFolder + "_histo_db_jitter.import";
+      //  ExportHistogramData(jitterFilename, jitterPacketMap);
+
+       // String latencyFilename = rootFolder + "\\latency.export";
+     //   ExportHistogramData(latencyFilename, latencyPacketMap);

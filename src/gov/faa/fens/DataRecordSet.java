@@ -12,7 +12,8 @@ public class DataRecordSet
     public String Testname;
     public String OutFileTypeStr;
     public String InFileTypeStr;
-    public String Filename;
+    public String InFilename;
+    public String OutFileSuffix;
     public String Hostname;
     public File RootFolderOrFile;
     public List<String> InRows = new ArrayList<>();
@@ -36,16 +37,16 @@ public class DataRecordSet
         ProcessType = dataRecordSet.ProcessType;
         OutFileTypeStr = dataRecordSet.OutFileTypeStr;
         InFileTypeStr = dataRecordSet.InFileTypeStr;
-        Filename = dataRecordSet.Filename;
+        InFilename = dataRecordSet.InFilename;
         Hostname = dataRecordSet.Hostname;
         RootFolderOrFile = dataRecordSet.RootFolderOrFile;
         InFileType = dataRecordSet.InFileType;
         OutFileType = dataRecordSet.OutFileType;
         OutWriter = dataRecordSet.OutWriter;
     }
-    public void ExportData() throws Exception
+    public void PrepareForExport() throws Exception
     {
-        OutFileType.FormatDataRows(this);
+        OutFileType.PrepareForExport(this);
     }
     public void SetOutRecordHeader()
     {

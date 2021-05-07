@@ -7,11 +7,11 @@ import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public class WanFileType extends FileType
+public class WanQualityFileType extends FileType
 {
     //   private static String TitleHeader = "timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount\n";
 
-    WanFileType()
+    WanQualityFileType()
     {
         // 17 cols
         HeaderCsv = "technology,testname,WAN name,Type,Cell ID,Carrier,Band,LTE - RSRP,LTE - SINR,LTE - RSRQ,Latency,MNC,MCC,Time,Latitude,Longitude,Altitude\n";

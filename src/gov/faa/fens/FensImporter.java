@@ -1,7 +1,6 @@
 package gov.faa.fens;
 
 import java.io.*;
-import java.nio.file.Files;
 
 public class FensImporter
 {
@@ -17,76 +16,36 @@ public class FensImporter
                 System.exit(1);
             }
 
-            for (String arg : args)
-            {
-                if (arg.startsWith("-t"))
-                {
-                    dataRecordSet.Technology = arg.substring(2);
-                }
-                else if (arg.startsWith("-n"))
-                {
-                    dataRecordSet.Testname = arg.substring(2);
-                }
-                else
-                {
-                    dataRecordSet.Filename = arg;
-                }
-            }
+            processArgs(args, dataRecordSet);
 
-            dataRecordSet.RootFolderOrFile = dataRecordSet.Filename.toLowerCase().endsWith(".zip") ? UnzipFiles.UnzipAndCopyLocal(dataRecordSet.Filename) : new File(dataRecordSet.Filename);
+            dataRecordSet.RootFolderOrFile = dataRecordSet.InFilename.toLowerCase().endsWith(".zip") ?
+                    UnzipFiles.UnzipAndCopyLocal(dataRecordSet.InFilename) : new File(dataRecordSet.InFilename);
 
             if (dataRecordSet.RootFolderOrFile == null)
             {
-                System.out.println("Unable to establish root Folder from: " + dataRecordSet.Filename);
+                System.out.println("Unable to establish root Folder from: " + dataRecordSet.InFilename);
                 return;
             }
 
-        //    dataRecordSet.OutFileType = MapManager.mapFileType.get(dataRecordSet.OutFileTypeStr);
-
-            String[] splitName = dataRecordSet.Filename.split("\\.");
+            String[] splitName = dataRecordSet.InFilename.split("\\.");
 
             dataRecordSet.OutFileTypeStr = splitName[splitName.length-1];
 
-            // Move to the in file type if not csv
+            // Move to the in file type class if input file is not always csv
             DataManager.ImportFileRows(dataRecordSet);
 
-            FileType.setInFileType(dataRecordSet);
+            // Determine the data being imported
+            FileType.SetInFileType(dataRecordSet);
 
-            // Default out is same as in for now (csv)
+            // Default out data content same as in for now
             dataRecordSet.OutFileType = dataRecordSet.InFileType;
 
-            // Export the file
-            dataRecordSet.ExportData();
+            // Prep for Export the file
+            dataRecordSet.PrepareForExport();
 
-          //  List<DataRecordSet> recordSetList = DataManager.ProcessInputFiles(dataRecordSet);
+            // Save to file for importing into db
+            DataManager.ExportData(dataRecordSet);
 
-            String filePath = dataRecordSet.Filename;
-            boolean isExport = dataRecordSet.ProcessType.equals("-x");
-            if (isExport)
-            {
-                String outFileRoot = (filePath.endsWith(".csv")) ? filePath.substring(0, filePath.lastIndexOf("\\")) : dataRecordSet.RootFolderOrFile.getAbsolutePath();
-                String outFilename = outFileRoot + "\\outData.txt";
-
-                Files.deleteIfExists(new File(outFilename).toPath());
-                dataRecordSet.OutWriter = new BufferedWriter(new FileWriter(outFilename, true));
-                dataRecordSet.OutWriter.append(dataRecordSet.OutFileType.HeaderCsv).append("\n");
-            }
-
-            if (dataRecordSet.OutFileType instanceof HistoFileType)
-            {
-                dataRecordSet.OutFileType.FormatDataRows(dataRecordSet);
-              //  DataManager.ExportHistogram(dataRecordSet.RootFolderOrFile, recordSetList);
-            }
-            else
-            {
-/*                for (DataRecordSet _dataRecordSet : recordSetList)
-                {
-                    _dataRecordSet.OutWriter =  dataRecordSet.OutWriter;
-                    String loadExp = isExport ? "Exporting " : "Loading ";
-                    System.out.println(loadExp + _dataRecordSet.Filename);
-                    DataManager.OutputData(_dataRecordSet);
-                }*/
-            }
             System.out.println("\nCompleted");
 
         }
@@ -98,6 +57,25 @@ public class FensImporter
         {
             if (dataRecordSet.OutWriter != null)
                 dataRecordSet.OutWriter.close();
+        }
+    }
+
+    private static void processArgs(String[] args, DataRecordSet dataRecordSet)
+    {
+        for (String arg : args)
+        {
+            if (arg.startsWith("-t"))
+            {
+                dataRecordSet.Technology = arg.substring(2);
+            }
+            else if (arg.startsWith("-n"))
+            {
+                dataRecordSet.Testname = arg.substring(2);
+            }
+            else
+            {
+                dataRecordSet.InFilename = arg;
+            }
         }
     }
 

@@ -4,9 +4,7 @@ import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class DataManager
@@ -19,15 +17,12 @@ public class DataManager
         //_FileType = fileType;
     }
 
-
-
     public static void FormatDataRow(String[] csvData, DataRecordSet dataRecordSet) throws Exception
     {
         String Record;
         dataRecordSet.SetOutRecordHeader();
         if (dataRecordSet.OutFileType instanceof PcapFileType)
         {
-
             Record = String.format(dataRecordSet.OutFileType.PatternCsv, csvData[0],csvData[1],csvData[2],csvData[3],csvData[4]);
             return;
         }
@@ -44,12 +39,12 @@ public class DataManager
             Map<String, String> portReMap = null;
 
             String testGroup = "";
-            if (dataRecordSet.Filename.contains("BL2a"))
+            if (dataRecordSet.InFilename.contains("BL2a"))
             {
                 portMap = MapManager.portMapA;
                 portReMap = MapManager.portReMapA;
             }
-            else if (dataRecordSet.Filename.contains("BL2b"))
+            else if (dataRecordSet.InFilename.contains("BL2b"))
             {
                 portMap = MapManager.portMapB;
                 portReMap = MapManager.portReMapB;
@@ -145,7 +140,7 @@ public class DataManager
                     ttlStr = csvData[7];
                 }
 
-                String[] splitName = dataRecordSet.Filename.split("_");
+                String[] splitName = dataRecordSet.InFilename.split("_");
                 String[] derivedNameParts = splitName[0].split("\\\\");
                 String derivedName = derivedNameParts[derivedNameParts.length - 1];
 
@@ -199,10 +194,10 @@ public class DataManager
             {
                 XenaTimestamp xenaTimestamp = null;//buildXenaTimestamp(csvData[0]);
 
-                Boolean isTMobile = dataRecordSet.Filename.contains("T-Mobile");
-                Boolean isVZW = dataRecordSet.Filename.contains("VZW");
+                Boolean isTMobile = dataRecordSet.InFilename.contains("T-Mobile");
+                Boolean isVZW = dataRecordSet.InFilename.contains("VZW");
                 Boolean isXena = dataRecordSet.OutFileType instanceof XenaFileType;
-                Boolean isException = dataRecordSet.Filename.equals("exception");
+                Boolean isException = dataRecordSet.InFilename.equals("exception");
 
                 String srcport = csvData[1];
 
@@ -334,7 +329,7 @@ public class DataManager
     public static void ImportFileRows(DataRecordSet dataRecordSet) throws Exception
     {
         ArrayList<String[]> retList = new ArrayList<>();
-        BufferedReader fileReader = new BufferedReader(new FileReader(dataRecordSet.Filename));
+        BufferedReader fileReader = new BufferedReader(new FileReader(dataRecordSet.InFilename));
         dataRecordSet.InRows = new ArrayList<>();
         String row;
         while ((row = fileReader.readLine()) != null)
@@ -385,9 +380,9 @@ public class DataManager
             for (String nextFile : fileList)
             {
                 DataRecordSet dataRecordSet = new DataRecordSet(_dataRecordSet);
-                dataRecordSet.Filename = nextFile;
+                dataRecordSet.InFilename = nextFile;
 
-                System.out.println("Reading data from: " + dataRecordSet.Filename);
+                System.out.println("Reading data from: " + dataRecordSet.InFilename);
 
                 fileReader = new BufferedReader(new FileReader(nextFile));
 
@@ -500,19 +495,30 @@ public class DataManager
         return recordSetList;
     }
 
-    public static void ExportData(FileType fileType, BufferedWriter outWriter) throws Exception
+    public static void ExportData(DataRecordSet dataRecordSet) throws Exception
     {
-        if (fileType != null && outWriter != null)
+        try
         {
-            fileType.Sb.append("").append("\n");
-            if (--fileType.BlockCounter <= 0)
+            String filePath = dataRecordSet.InFilename;
+            String[] splitPath = filePath.split("\\.");
+            String outFileRoot = splitPath[0];
+            //(filePath.endsWith(".csv")) ? filePath.substring(0, filePath.lastIndexOf("\\")) : dataRecordSet.RootFolderOrFile.getAbsolutePath();
+
+            String outFilename = outFileRoot + dataRecordSet.OutFileSuffix;
+            Files.deleteIfExists(new File(outFilename).toPath());
+            dataRecordSet.OutWriter = new BufferedWriter(new FileWriter(outFilename, true));
+
+            for (String row : dataRecordSet.OutRows)
             {
-                outWriter.append(fileType.Sb.toString());
-                System.out.println("Loaded " + fileType.Sb.length() + " Bytes ");
-                fileType.BlockCounter = FileType.BLOCK_SIZE;
-                fileType.Sb = new StringBuffer();
+                dataRecordSet.OutWriter.append(row);
             }
         }
+        finally
+        {
+            if (dataRecordSet.OutWriter != null)
+                dataRecordSet.OutWriter.close();;
+        }
+
     }
 
     public static Boolean TestConnection(String urlString) throws Exception
@@ -541,96 +547,4 @@ public class DataManager
         }
         return true;
     }
-
-    private static int sendJsonRequest(String urlString, String jsonRecord) throws Exception
-    {
-        HttpURLConnection con = null;
-        BufferedReader in = null;
-        try
-        {
-            URL url = new URL(urlString);
-            con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setDoOutput(true);
-
-            byte[] outJson = jsonRecord.getBytes(StandardCharsets.UTF_8);
-
-            int length = outJson.length;
-            con.setFixedLengthStreamingMode(length);
-            con.setRequestProperty("Content-Type", "application/x-ndjson; charset=UTF-8");
-            con.connect();
-            try (OutputStream os = con.getOutputStream())
-            {
-                os.write(outJson);
-            }
-
-            int status = con.getResponseCode();
-            return status;
-        }
-        finally
-        {
-            if (in != null) in.close();
-            if (con != null) con.disconnect();
-        }
-    }
-
-    private static StringBuffer sendJsonData(FileType fileType) throws Exception
-    {
-        String urlString = fileType.Hostname + fileType.UrlPattern;
-        int status = sendJsonRequest(urlString, fileType.Sb.toString());
-        System.out.println("Loaded " + fileType.Sb.length() + " Bytes " + status);
-        fileType.BlockCounter = FileType.BLOCK_SIZE;
-        return new StringBuffer();
-    }
-
-    public static void OutJsonData(FileType fileType) throws Exception
-    {
-        String Record = null;
-        if (fileType != null && Record != null)
-        {
-            fileType.Sb.append(Record);//.append("\n");
-            if (--fileType.BlockCounter <= 0)
-            {
-                fileType.Sb = sendJsonData(fileType);
-            }
-        }
-    }
-    public static void OutputData(DataRecordSet dataRecordSet) throws Exception
-    {
-        try
-        {
-            for (String row : dataRecordSet.InRows)
-            {
-                String[] csvData = row.split(",");
-                DataManager.FormatDataRow(csvData, dataRecordSet);
-                if (dataRecordSet.OutWriter != null)
-                {
-                    ExportData(dataRecordSet.OutFileType, dataRecordSet.OutWriter);
-                }
-                else
-                {
-                    OutJsonData(dataRecordSet.OutFileType);
-                }
-            }
-
-            if (dataRecordSet.OutFileType.Sb.length() > 0)
-            {
-                if (dataRecordSet.OutWriter != null)
-                {
-                    dataRecordSet.OutWriter.append(dataRecordSet.OutFileType.Sb.toString());
-                    System.out.println("Loaded " + dataRecordSet.OutFileType.Sb.length() + " Bytes ");
-                    dataRecordSet.OutFileType.BlockCounter = FileType.BLOCK_SIZE;
-                    dataRecordSet.OutFileType.Sb = new StringBuffer();
-
-                }
-                else
-                    dataRecordSet.OutFileType.Sb = sendJsonData(dataRecordSet.OutFileType);
-            }
-        }
-        finally
-        {
-
-        }
-    }
-
 }

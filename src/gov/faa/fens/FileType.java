@@ -1,9 +1,6 @@
 package gov.faa.fens;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Map;
 
 public class FileType
@@ -23,24 +20,40 @@ public class FileType
 
     protected FileType(){}
 
-    public static void setInFileType(DataRecordSet dataRecordSet)
+    public static void SetInFileType(DataRecordSet dataRecordSet)
     {
-        String[] header = dataRecordSet.InRows.get(0).split(",");
-
-        if (header[0].equals("Timestamp") && header[1].equals("SrcPort"))
-        {
-            dataRecordSet.InFileType = new XenaFileType();
-        }
-        else if (header[0].equals("timestamp") && header[1].equals("mix"))
+        String firstRow =dataRecordSet.InRows.get(0);
+        String[] headerParts = firstRow.split(",");
+        if (dataRecordSet.InFilename.contains("chariot_mix"))
         {
             dataRecordSet.InFileType = new ChariotMixFileType();
         }
-        else if (header[0].equals("WAN name") && header[1].equals("Type"))
+        else if (firstRow.startsWith("WAN"))
         {
             dataRecordSet.InFileType = new WanQualityFileType();
         }
+        else if (firstRow.contains("Distribution"))
+        {
+            dataRecordSet.InFileType = new HistoFileType();
+        }
+        else if (headerParts[0].equals("Timestamp") && headerParts[1].equals("SrcPort"))
+        {
+            dataRecordSet.InFileType = new XenaFileType();
+        }
+        else if (headerParts[0].equals("timestamp") && headerParts[1].equals("mix"))
+        {
+            dataRecordSet.InFileType = new ChariotMixFileType();
+        }
+        else if (headerParts[0].equals("WAN name") && headerParts[1].equals("Type"))
+        {
+            dataRecordSet.InFileType = new WanQualityFileType();
+        }
+        else
+        {
+            System.out.println("Cannot Parse Unknown file type: "+dataRecordSet.InFilename);
+        }
     }
-    public void FormatDataRows(DataRecordSet dataRecordSet) throws Exception
+    public void PrepareForExport(DataRecordSet dataRecordSet) throws Exception
     {
         throw new Exception("No ExportData Override");
         //DataManager.exportFile(dataRecordSet);
@@ -53,11 +66,11 @@ public class FileType
     {
         Map<String, String> portMap = null;
 
-        if (dataRecordSet.Filename.contains("BL2a"))
+        if (dataRecordSet.InFilename.contains("BL2a"))
         {
             portMap = MapManager.portMapA;
         }
-        else if (dataRecordSet.Filename.contains("BL2b"))
+        else if (dataRecordSet.InFilename.contains("BL2b"))
         {
             portMap = MapManager.portMapB;
         }
@@ -70,11 +83,11 @@ public class FileType
     protected Map<String, String> getPortReMap(DataRecordSet dataRecordSet)
     {
         Map<String, String> portReMap = null;
-        if (dataRecordSet.Filename.contains("BL2a"))
+        if (dataRecordSet.InFilename.contains("BL2a"))
         {
             portReMap = MapManager.portReMapA;
         }
-        else if (dataRecordSet.Filename.contains("BL2b"))
+        else if (dataRecordSet.InFilename.contains("BL2b"))
         {
             portReMap = MapManager.portReMapB;
         }

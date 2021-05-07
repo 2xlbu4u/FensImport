@@ -9,52 +9,41 @@ import java.util.*;
 
 public class HistoFileType extends FileType
 {
-    public static String TitleHeader = "timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount\n";
+    private static String TitleHeader = "timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount\n";
 
     HistoFileType()
     {
-        HeaderCsv = "CP1,,CP5,,P1,,P2,,P4,,P5,,\n" +
-                    "timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount\n";
-        PatternCsv = "%f,%d,%f,%d,%f,%d,%f,%d,%f,%d,%f,%d\n";
+        HeaderCsv = "technology,testname,time,count\n";
+        PatternCsv = "%s,%s,%d,%d\n";
     }
 
     @Override
-    public void FormatDataRows(DataRecordSet dataRecordSet) throws Exception
+    public void PrepareForExport(DataRecordSet dataRecordSet) throws Exception
     {
-        BufferedWriter outWriter = null;
-        Map<String, List<TimePacketRecord>> jitterPacketMap = new HashMap<>();
-        Map<String, List<TimePacketRecord>> latencyPacketMap = new HashMap<>();
-        Map<String, List<TimePacketRecord>> currentPacketMap = null;
+        String header = dataRecordSet.InRows.get(0);
+        dataRecordSet.OutRows.add(HeaderCsv);
+        if (header.contains("Jitter"))
+        {
+            dataRecordSet.OutFileSuffix = "_jitter_histo_db_import.csv";
+        }
+        else if (header.contains("Latency"))
+        {
+            dataRecordSet.OutFileSuffix = "_latency_histo_db_import.csv";
+        }
+        String[] timeRow = dataRecordSet.InRows.get(1).split(",");
+        String[] countRow = dataRecordSet.InRows.get(2).split(",");
 
-    //    for (DataRecordSet dataRecordSet : recordSetList)
-     //   {
-            if (dataRecordSet.Filename.contains("Jitter"))
-                currentPacketMap = jitterPacketMap;
-            else if (dataRecordSet.Filename.contains("Latency"))
-                currentPacketMap = latencyPacketMap;
+        // first 2 cols get skipped
+        for (int i = 2; i < timeRow.length; i++)
+        {
+            String outrow = String.format(PatternCsv, dataRecordSet.Technology, dataRecordSet.Testname, Integer.parseInt(timeRow[i]), Integer.parseInt(countRow[i]));
+            dataRecordSet.OutRows.add(outrow);
 
-            String[] segments = dataRecordSet.Filename.split(" ");
-            String nameExt = segments[segments.length-1];
-            String portName = nameExt.split("\\.")[0];
-            if (!currentPacketMap.containsKey(portName))
-                currentPacketMap.put(portName, new ArrayList<>());
-
-            String[] timeRow = dataRecordSet.InRows.get(0).split(",");
-            String[] countRow = dataRecordSet.InRows.get(1).split(",");
-
-            for (int i = 2; i < timeRow.length; i++)
-            {
-                TimePacketRecord timePacketRecord = new TimePacketRecord(timeRow[i], countRow[i]);
-                currentPacketMap.get(portName).add(timePacketRecord);
-            }
-     //   }
-        String rootFolder = "";
-        String jitterFilename = rootFolder + "\\jitter.export";
-        ExportHistogramData(jitterFilename, jitterPacketMap);
-
-        String latencyFilename = rootFolder + "\\latency.export";
-        ExportHistogramData(latencyFilename, latencyPacketMap);
+        }
     }
+}
+ //  TimePacketRecord timePacketRecord = new TimePacketRecord(timeRow[i], countRow[i]);
+/*
 
     public static void ExportHistogramData(String filename, Map<String, List<TimePacketRecord>> packetMap) throws Exception
     {
@@ -87,3 +76,10 @@ public class HistoFileType extends FileType
         outWriter.close();
     }
 }
+*/
+/*                String[] segments = dataRecordSet.InFilename.split(" ");
+                String nameExt = segments[segments.length - 1];
+                String portName = nameExt.split("\\.")[0];
+
+                if (!currentPacketMap.containsKey(portName))
+                    currentPacketMap.put(portName, new ArrayList<>());*/
