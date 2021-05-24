@@ -1,20 +1,13 @@
 package gov.faa.fens;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Files;
-import java.text.DecimalFormat;
-import java.util.*;
-
-public class WanQualityFileType extends FileType
+public class ChariotMixType extends FileType
 {
     //   private static String TitleHeader = "timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount\n";
 
-    WanQualityFileType()
+    ChariotMixType()
     {
         // 17 cols
-        HeaderCsv = "technology,testname,WAN name,Type,Cell ID,Carrier,Band,LTE - RSRP,LTE - SINR,LTE - RSRQ,Latency,MNC,MCC,Time,Latitude,Longitude,Altitude\n";
+        HeaderCsv = "technology,testname,";
         PatternCsv = "%s,%s,%s,%s,%d,%s,%s,%d,%d,%d,%,%d,%d,%s,%f,%f,%f\n";
     }
 
@@ -28,12 +21,12 @@ public class WanQualityFileType extends FileType
         {
             if (header == null)
             {
-                header = HeaderCsv;
-                dataRecordSet.OutRows.add(HeaderCsv);
+                header = HeaderCsv + row + "\n";
+                dataRecordSet.OutRows.add(header);
                 continue;
             }
             // replace lat, lon, alt with 0 if they do not exist
-            row = row.replace(",,,", ",0.0,0.0,0.0");
+            row = row.replace("N/A", "0");
 /*            while (row.contains(",,"))
             {
                 row = row.replace(",,",",null,");

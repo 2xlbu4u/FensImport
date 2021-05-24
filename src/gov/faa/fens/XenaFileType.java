@@ -41,9 +41,8 @@ public class XenaFileType extends FileType
         Map<String, String> portReMap = getPortReMap(dataRecordSet);
         String header = null;
         Boolean isTMobile = dataRecordSet.InFilename.contains("T-Mobile");
-        Boolean isVZW = dataRecordSet.InFilename.contains("VZW");
-//         Boolean isXena = dataRecordSet.OutFileType instanceof XenaFileType;
-        Boolean isException = dataRecordSet.InFilename.equals("exception");
+        boolean isVZW = dataRecordSet.InFilename.contains("VZW");
+        boolean isException = dataRecordSet.InFilename.equals("exception");
         dataRecordSet.OutFileSuffix = "xena_db_import.csv";
 
         for (String row : dataRecordSet.InRows)

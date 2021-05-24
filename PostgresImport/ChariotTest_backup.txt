@@ -1,0 +1,182 @@
+    "technology" character varying COLLATE pg_catalog."default" NOT NULL,
+    "testname" character varying COLLATE pg_catalog."default" NOT NULL,
+    "mix" character varying COLLATE pg_catalog."default" NOT NULL,
+    "Source IP" character varying COLLATE pg_catalog."default" NOT NULL,
+    "Destination IP" character varying COLLATE pg_catalog."default" NOT NULL,
+    "Throughput" double precision NOT NULL,
+    "Avg Throughput" double precision NOT NULL,
+    "MinThroughput" double precision NOT NULL,
+    "MaxThroughput" double precision NOT NULL,
+    "MaxThroughput" double precision NOT NULL,
+	"Total Measured Time" double precision NOT NULL,
+	"Total Bytes Sent" double precision NOT NULL,
+	"Total Bytes Sent By Source" double precision NOT NULL,
+	"Total Bytes Sent By Destination" double precision NOT NULL,
+	"Total Bytes Received" double precision NOT NULL,
+	"Total Bytes Received By Source" double precision NOT NULL,
+	"Total Bytes Received By Destination" double precision NOT NULL,
+	"Bytes Lost Percentage" double precision NOT NULL,
+	"Total Bytes Lost" double precision NOT NULL,
+	"Total Bytes Lost By Source" double precision NOT NULL,
+	"Total Bytes Lost By Destination" double precision NOT NULL,
+	"Datagrams Lost" double precision NOT NULL,
+	"Datagrams Lost By Source" double precision NOT NULL,
+	"Datagrams Lost By Destination" double precision NOT NULL,
+	"Maximum Consecutive DG Lost" double precision NOT NULL,
+	"Maximum Consecutive DG Lost By Source" double precision NOT NULL,
+	"Maximum Consecutive DG Lost By Destination" double precision NOT NULL,
+	"Total Datagrams Sent" double precision NOT NULL,
+	"Total Datagrams Sent By Source" double precision NOT NULL,
+	"Total Datagrams Sent By Destination" double precision NOT NULL,
+	"Total Datagrams Received" double precision NOT NULL,
+	"Total Datagrams Received By Source" double precision NOT NULL,
+	"Total Datagrams Received By Destination" double precision NOT NULL,
+	"Total Duplicate DG Sent" double precision NOT NULL,
+	"Total Duplicate DG Sent By Source" double precision NOT NULL,
+	"Total Duplicate DG Sent By Destination" double precision NOT NULL,
+	"Total Duplicate DG Received" double precision NOT NULL,
+	"Total Duplicate DG Received By Source" double precision NOT NULL,
+	"Total Duplicate DG Received By Destination" double precision NOT NULL,
+	"Total DG Out of Order" double precision NOT NULL,
+	"Jitter" double precision NOT NULL,
+	"Avg Jitter" double precision NOT NULL,
+	"Min" double precision NOT NULL,
+	"Max" double precision NOT NULL,
+	"Jitter" double precision NOT NULL,
+	"Delay Variation" double precision NOT NULL,
+	"Max Delay Variation" double precision NOT NULL,
+	"One-Way Delay" double precision NOT NULL,
+	"Avg One-Way Delay" double precision NOT NULL,
+	"Min One-Way Delay" double precision NOT NULL,
+	"Max One-Way Delay" double precision NOT NULL,
+	"Estimated Error" double precision NOT NULL,
+	"Maximum Error" double precision NOT NULL,
+	
+    "" character varying COLLATE pg_catalog."default" NOT NULL,
+    "" character varying COLLATE pg_catalog."default" NOT NULL,
+
+    "Band" character varying COLLATE pg_catalog."default" NOT NULL,
+    "Cell ID" integer NOT NULL,
+    "Time" timestamp without time zone NOT NULL,
+
+    "Longitude" double precision NOT NULL,
+    "Altitude" double precision NOT NULL
+"technology"                                            "LTE"								    "technology" character varying COLLATE pg_catalog."default" NOT NULL,
+"testname"                                              "Chariot"                               "testname" character varying COLLATE pg_catalog."default" NOT NULL,
+"timestamp"                                             "2000"                                  "timestamp" double precision NOT NULL,
+"mix"                                                   "TR10_Dst-Src"                          "mix" character varying COLLATE pg_catalog."default" NOT NULL,
+"Source IP"                                             "192.168.20.10"                         "Source IP" character varying COLLATE pg_catalog."default" NOT NULL,
+"Destination IP"                                        "192.168.50.10"                         "Destination IP" character varying COLLATE pg_catalog."default" NOT NULL,
+"Throughput"                                            "125504"                                "Throughput" double precision NOT NULL,
+"Avg Throughput"                                        "125504"                                "Avg Throughput" double precision NOT NULL,
+"Min Throughput"                                        "125504"                                "Min Throughput" double precision NOT NULL,
+"Max Throughput"                                        "125504"                                "Max Throughput" double precision NOT NULL,
+"Total Measured Time"                                   "2"                                 	"Total Measured Time" double precision NOT NULL,
+"Total Bytes Sent"                                      "31376"                             	"Total Bytes Sent" double precision NOT NULL,
+"Total Bytes Sent By Source"                            "N/A"                               	"Total Bytes Sent By Source" double precision NOT NULL,
+"Total Bytes Sent By Destination"                       "31376"                             	"Total Bytes Sent By Destination" double precision NOT NULL,
+"Total Bytes Received"                                  "31376"                             	"Total Bytes Received" double precision NOT NULL,
+"Total Bytes Received By Source"                        "31376"                             	"Total Bytes Received By Source" double precision NOT NULL,
+"Total Bytes Received By Destination"                   "N/A"                               	"Total Bytes Received By Destination" double precision NOT NULL,
+"Bytes Lost Percentage"                                 "0.000"                             	"Bytes Lost Percentage" double precision NOT NULL,
+"Total Bytes Lost"                                      "0"                                 	"Total Bytes Lost" double precision NOT NULL,
+"Total Bytes Lost By Source"                            "N/A"                               	"Total Bytes Lost By Source" double precision NOT NULL,
+"Total Bytes Lost By Destination"                       "0"                                 	"Total Bytes Lost By Destination" double precision NOT NULL,
+"Datagrams Lost"                                        "0"                                 	"Datagrams Lost" double precision NOT NULL,
+"Datagrams Lost By Source"                              "N/A"                               	"Datagrams Lost By Source" double precision NOT NULL,
+"Datagrams Lost By Destination"                         "0"                                 	"Datagrams Lost By Destination" double precision NOT NULL,
+"Maximum Consecutive DG Lost"                           "0"                                 	"Maximum Consecutive DG Lost" double precision NOT NULL,
+"Max Maximum Consecutive DG Lost"                       "0"                                 	"Max Maximum Consecutive DG Lost" double precision NOT NULL,
+"Max Maximum Consecutive DG Lost By Source"             "N/A"                               	"Max Maximum Consecutive DG Lost By Source" double precision NOT NULL,
+"Max Maximum Consecutive DG Lost By Destination"        "0"                                 	"Max Maximum Consecutive DG Lost By Destination" double precision NOT NULL,
+"Total Datagrams Sent"                                  "424"                               	"Total Datagrams Sent" double precision NOT NULL,
+"Total Datagrams Sent By Source"                        "N/A"                               	"Total Datagrams Sent By Source" double precision NOT NULL,
+"Total Datagrams Sent By Destination"                   "424"                               	"Total Datagrams Sent By Destination" double precision NOT NULL,
+"Total Datagrams Received"                              "424"                               	"Total Datagrams Received" double precision NOT NULL,
+"Total Datagrams Received By Source"                    "424"                               	"Total Datagrams Received By Source" double precision NOT NULL,
+"Total Datagrams Received By Destination"               "N/A"                               	"Total Datagrams Received By Destination" double precision NOT NULL,
+"Total Duplicate DG Sent"                               "N/A"                               	"Total Duplicate DG Sent" double precision NOT NULL,
+"Total Duplicate DG Sent By Source"                     "N/A"                               	"Total Duplicate DG Sent By Source" double precision NOT NULL,
+"Total Duplicate DG Sent By Destination"                "N/A"                               	"Total Duplicate DG Sent By Destination" double precision NOT NULL,
+"Total Duplicate DG Received"                           "0"                                 	"Total Duplicate DG Received" double precision NOT NULL,
+"Total Duplicate DG Received By Source"                 "0"                                 	"Total Duplicate DG Received By Source" double precision NOT NULL,
+"Total Duplicate DG Received By Destination"            "N/A"                               	"Total Duplicate DG Received By Destination" double precision NOT NULL,
+"Total DG Out of Order"                                 "0"                                 	"Total DG Out of Order" double precision NOT NULL,
+"Jitter"                                                "5.000"                             	"Jitter" double precision NOT NULL,
+"Avg Jitter"                                            "5.000"                             	"Avg Jitter" double precision NOT NULL,
+"Min Jitter"                                            "5"                                 	"Min" double precision NOT NULL,
+"Max Jitter"                                            "5"                                 	"Max" double precision NOT NULL,
+"Delay Variation"                                       "31"                                	"Delay Variation" double precision NOT NULL,
+"Max Delay Variation"                                   "31"                                	"Max Delay Variation" double precision NOT NULL,
+"One-Way Delay"                                         "41.000"                            	"One-Way Delay" double precision NOT NULL,
+"Avg One-Way Delay"                                     "41.000"                            	"Avg One-Way Delay" double precision NOT NULL,
+"Min One-Way Delay"                                     "41"                                	"Min One-Way Delay" double precision NOT NULL,
+"Max One-Way Delay"                                     "41"                                	"Max One-Way Delay" double precision NOT NULL,
+"Estimated Error"                                       "N/A"                               	"Estimated Error" double precision NOT NULL,
+"Maximum Error"                                         "N/A"                               	"Maximum Error" double precision NOT NULL,
+                                                                                                
+
+
+
+
+
+
+
+
+
+
+
+"Mos"                                                   "N/A"
+"Avg Mos"                                               "N/A"
+"Min Mos"                                               "N/A"
+"Max Mos"                                               "N/A"
+"R-value"                                               "N/A"
+"Avg R-value"                                           "N/A"
+"End-to-End Delay"                                      "N/A"
+"Avg End-to-End Delay"                                  "N/A"
+"Jitter Buffer Lost Datagrams"                          "N/A"
+"Total Jitter Buffer Lost Datagrams"                    "N/A"
+"DF"                                                    "N/A"
+"Avg DF"                                                "N/A"
+"Min DF"                                                "N/A"
+"Max DF"                                                "N/A"
+"MLR"                                                   "N/A"
+"Avg MLR"                                               "N/A"
+"Min MLR"                                               "N/A"
+"Max MLR"                                               "N/A"
+"RSSI for Source"                                       "N/A"
+"RSSI for Destination"                                  "N/A"
+"BSSID for Source"                                      "N/A"
+"BSSID for Destination"                                 "N/A"
+"SSID for Source"                                       "N/A"
+"SSID for Destination"                                  "N/A"
+"Wi-Fi Link Speed for Source"                           "N/A"
+"Wi-Fi Link Speed for Destination"                      "N/A"
+"Wi-Fi Frequency for Source"                            "N/A"
+"Wi-Fi Frequency for Destination"                       "N/A"
+"Wi-Fi Channel for Source"                              "N/A"
+"Wi-Fi Channel for Destination"                         "N/A"
+"Latitude for Source"                                   "N/A"
+"Latitude for Destination"                              "N/A"
+"Longitude for Source"                                  "N/A"
+"Longitude for Destination"                             "N/A"
+"Total HTTP Video Upshifts"                             "N/A"
+"Total HTTP Video Downshifts"                           "N/A"
+"Total HTTP Video Very Low Quality Segments"            "N/A"
+"Total HTTP Video Low Quality Segments"                 "N/A"
+"Total HTTP Video Medium Quality Segments"              "N/A"
+"Total HTTP Video High Quality Segments"                "N/A"
+"Total HTTP Video Very High Quality Segments"           "N/A"
+"Avg HTTP Video Prebuffering Duration"                  "N/A"
+"Min HTTP Video Prebuffering Duration"                  "N/A"
+"Max HTTP Video Prebuffering Duration"                  "N/A"
+"Total HTTP Video Stopped Count"                        "N/A"
+"Total HTTP Video Stopped Duration"                     "N/A"
+"Total HTTP Video Buffer Full Count"                    "N/A"
+"Total HTTP Video Buffer Full Duration"                 "N/A"
+"HTTP Video Rate"                                       "N/A"
+"Avg HTTP Video Rate"                                   "N/A"
+"Min HTTP Video Rate"                                   "N/A"
+"Max HTTP Video Rate"                                   "N/A"
+"CPU Utilization for Source"                            "N/A"
+"CPU Utilization for Destination"                       "N/A"

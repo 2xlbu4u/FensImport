@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="FensImport:jar">
+  <artifact type="jar" build-on-make="true" name="FensImport:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/FensImport_jar</output-path>
     <root id="archive" name="FensImport.jar">
       <element id="module-output" name="FensImport" />

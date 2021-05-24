@@ -17,7 +17,7 @@ public class DataManager
         //_FileType = fileType;
     }
 
-    public static void FormatDataRow(String[] csvData, DataRecordSet dataRecordSet) throws Exception
+/*    public static void FormatDataRow(String[] csvData, DataRecordSet dataRecordSet) throws Exception
     {
         String Record;
         dataRecordSet.SetOutRecordHeader();
@@ -325,7 +325,7 @@ public class DataManager
             throw ex;
         }
 
-    }
+    }*/
     public static void ImportFileRows(DataRecordSet dataRecordSet) throws Exception
     {
         ArrayList<String[]> retList = new ArrayList<>();
@@ -343,7 +343,7 @@ public class DataManager
         dataRecordSet.OutFileType.ExportData(dataRecordSet);
     }*/
 
-    public static List<DataRecordSet> ProcessInputFiles(DataRecordSet _dataRecordSet) throws Exception
+/*    public static List<DataRecordSet> ProcessInputFiles(DataRecordSet _dataRecordSet) throws Exception
     {
         List<DataRecordSet> recordSetList = new ArrayList<>();
 
@@ -493,7 +493,7 @@ public class DataManager
         }
 
         return recordSetList;
-    }
+    }*/
 
     public static void ExportData(DataRecordSet dataRecordSet) throws Exception
     {

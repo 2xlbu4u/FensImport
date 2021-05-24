@@ -48,6 +48,10 @@ public class FileType
         {
             dataRecordSet.InFileType = new WanQualityFileType();
         }
+        else if (headerParts[0].equals("Date") && headerParts[1].equals("Time"))
+        {
+            dataRecordSet.InFileType = new PingFileType();
+        }
         else
         {
             System.out.println("Cannot Parse Unknown file type: "+dataRecordSet.InFilename);
