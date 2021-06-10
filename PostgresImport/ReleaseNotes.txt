@@ -1,10 +1,4 @@
-FensImport v3 Release Notes
+FensImport v4 Release Notes
 
-* Add Missing column RxPckLossRatio that is used in some of the xena files
-* Rounded times that were at 20 decimal places
-
-* BL2c-Follow-Up_1_Hour_092820.csv has unknown format:
-timestamp,srcname,destname,srctodest,packetbytes
-"2020-09-28 10:45:40.039663","Pepwave P4","Pepwave P5","Pepwave P4 to Pepwave P5","2a 2b 2c 2d 2e 2f 30 31 32 33 34 35 36 37 38 39 3a 3b 3c 3d 3e 3f 40 41 42 43 44 45 46 47 48 49 4a 4b 4c 4d 4e 4f 50 51 52 53 54 55 56 57 58 59 5a 5b 5c 5d 5e 5f 60 61 62 63 64 65 66 67 00 00 00 66 00 18 f4 00 03 2a 80 00 fb 03 bf 32 de 74 b0 66"
-
+* now checks for "E-" before first parse
 * PRTG format is currently not supported. Need to discuss how to store it in the DB
