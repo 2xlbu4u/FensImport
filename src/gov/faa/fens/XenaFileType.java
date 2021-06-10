@@ -113,7 +113,7 @@ public class XenaFileType extends FileType
             int rxpcklossratio = 0;
 
             if (header.contains("RxPckLossRatio"))
-                rxpcklossratio = makeFloorZeroInt(csvData[++i]);
+                rxpcklossratio = (int)makeFloorZeroFloat(csvData[++i]);
 
             int packetlossps = 0;
             if (isException)

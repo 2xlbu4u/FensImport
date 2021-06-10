@@ -1,4 +1,4 @@
 FensImport v4 Release Notes
 
-* now checks for "E-" before first parse
+* Packet Loss Ratio now float to int conversion
 * PRTG format is currently not supported. Need to discuss how to store it in the DB
