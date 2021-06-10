@@ -110,7 +110,10 @@ public class XenaFileType extends FileType
 
             int rxfcserrors = makeFloorZeroInt(csvData[++i]);
             int rxseqerr = makeFloorZeroInt(csvData[++i]);
-            int rxpcklossratio = makeFloorZeroInt(csvData[++i]);
+            int rxpcklossratio = 0;
+
+            if (header.contains("RxPckLossRatio"))
+                rxpcklossratio = makeFloorZeroInt(csvData[++i]);
 
             int packetlossps = 0;
             if (isException)
@@ -126,7 +129,7 @@ public class XenaFileType extends FileType
             // rxber is always nano seconds so make zero
             Float rxber = 0.0f;
 
-            int rxbercurr = makeFloorZeroInt(csvData[++i]);
+            int rxbercurr = (int)makeFloorZeroFloat(csvData[++i]);
 
             Float latencycurr = makeFloorZeroFloat(csvData[++i]);
             Float latencycurrmin = makeFloorZeroFloat(csvData[++i]);
@@ -192,7 +195,22 @@ public class XenaFileType extends FileType
 
     private static float makeFloorZeroFloat(String data)
     {
-        return data.contains("E-") ? 0 : Float.parseFloat(data);
+        if (data.contains("E-"))
+            return 0.0f;
+
+        String[] split = data.split("\\.");
+        if (split.length > 1)
+        {
+            String whole = split[0];
+            String decimal = split[1];
+            if (decimal.length() > 6)
+            {
+                // truncate to 6 places
+                decimal = decimal.substring(0, 6);
+                data = whole + "." + decimal;
+            }
+        }
+        return Float.parseFloat(data);
     }
 
     private static XenaTimestamp buildXenaTimestamp(String timestampIn)
