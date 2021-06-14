@@ -20,7 +20,7 @@ public class XenaFileType extends FileType
         "}\n";
         UrlPattern = "/xenapr/_bulk?pretty";
         HeaderCsv = "timestamp,technology,testname,srcport,sid,destport,tid,txl1bps,txbps,txfps,txbytes,txframes,rxl1bps,rxbps,rxfps,rxbytes,rxframes,rxfcserrors,rxseqerr,rxpcklossratio,packetlossps,prtt,rxmiserr,rxp1derr,rxber,rxbercurr,latencycurr,latencycurrmin,latencycurrmax,latencyavg,latencymin,latencymax,jittercurr,jittercurrmin,jittercurrmax,jitteravg,jittermin,jittermax";
-//                   Timestamp,SrcPort,SID,DestPort,TID,TxL1Bps,TxBps,TxFps,TxBytes,TxFrames,RxL1Bps,RxBps,RxFps,RxBytes,RxFrames,RxFcsErrors,RxSeqErr,RxPckLossRatio,                  RxMisErr,RxPldErr,RxBer,RxBerCurr,LatencyCurr,LatencyCurrMin,LatencyCurrMax,LatencyAvg,LatencyMin,LatencyMax,JitterCurr,JitterCurrMin,JitterCurrMax,JitterAvg,JitterMin,JitterMax
+//   incoming        Timestamp,                    SrcPort,SID,DestPort,TID,TxL1Bps,TxBps,TxFps,TxBytes,TxFrames,RxL1Bps,RxBps,RxFps,RxBytes,RxFrames,RxFcsErrors,RxSeqErr,RxPckLossRatio,                  RxMisErr,RxPldErr,RxBer,RxBerCurr,LatencyCurr,LatencyCurrMin,LatencyCurrMax,LatencyAvg,LatencyMin,LatencyMax,JitterCurr,JitterCurrMin,JitterCurrMax,JitterAvg,JitterMin,JitterMax
 
         PatternCsv =
             "\"%s\",\"%s\",\"%s\"," +
@@ -87,8 +87,8 @@ public class XenaFileType extends FileType
           //      System.out.println("No port remap for: " + srctodest);
 
             int i = 4;
-            if (isVZW)
-                i = 1;
+     //       if (isVZW) no longer true with VZW
+     //           i = 1;
 
             int txl1bps = makeFloorZeroInt(csvData[++i]);
             int txbps = makeFloorZeroInt(csvData[++i]);
