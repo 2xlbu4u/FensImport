@@ -1,8 +1,6 @@
 package gov.faa.fens;
 
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.UUID;
 
 public class PingFileType extends FileType
 {

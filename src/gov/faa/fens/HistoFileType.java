@@ -1,12 +1,5 @@
 package gov.faa.fens;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Files;
-import java.text.DecimalFormat;
-import java.util.*;
-
 public class HistoFileType extends FileType
 {
     private static String TitleHeader = "timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount,timebucket,packetcount\n";

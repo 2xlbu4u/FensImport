@@ -1,4 +1,5 @@
-FensImport v4 Release Notes
+FensImport v6 Release Notes
 
-* Packet Loss Ratio now float to int conversion
-* PRTG format is currently not supported. Need to discuss how to store it in the DB
+* Added additional columns for Wan quality
+* Fixed values that needed to be float vs int
+* DB column fixups to reflect code changes
