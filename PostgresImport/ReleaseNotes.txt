@@ -1,5 +1,5 @@
-FensImport v6 Release Notes
+FensImport v8 Release Notes
 
-* Added additional columns for Wan quality
-* Fixed values that needed to be float vs int
-* DB column fixups to reflect code changes
+* Converter now ignores rows with commas and no data
+* 3G DB columns changed from integer to numeric
+

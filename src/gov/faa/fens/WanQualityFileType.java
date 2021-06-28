@@ -28,6 +28,10 @@ public class WanQualityFileType extends FileType
         dataRecordSet.OutFileSuffix = "_db_import.csv";
         for (String _row : dataRecordSet.InRows)
         {
+            // Handle a no data row
+            if (_row.startsWith(","))
+                continue;
+
             String row = _row;
             if (header == null)
             {
